@@ -171,7 +171,7 @@ player_card <- function(f, file = NULL, nickname = NULL, n_show = 8, shots = NUL
     scale_shape_manual(values = c(Made = 16, Missed = 1), name = NULL) +
     scale_colour_manual(values = c(Made = col, Missed = "grey55"), name = NULL) +
     labs(title = "Every shot", subtitle = sprintf("%s regular season, %d shots", span, nrow(sh))) +
-    theme_court() + theme(legend.position = "top")
+    theme_project_court() + theme(legend.position = "top")
 
   # B: fingerprint
   prof <- f$profile |>
@@ -215,7 +215,7 @@ player_card <- function(f, file = NULL, nickname = NULL, n_show = 8, shots = NUL
                          pos_word, my_teams),
       caption = paste("Fingerprints are relative to each league and season, so 'today' means: a player who",
                       "stood out in his era the way he did, placed in today's league. Data start in 2010/11."),
-      theme = theme_project(11) + theme(plot.title = element_text(size = 18, colour = col)))
+      theme = theme_project(11) + theme(plot.title = ggtext::element_textbox_simple(size = 18, colour = col, face = "bold", margin = margin(b = 4))))
   if (!is.null(file)) ggsave(file, card, width = 13, height = 10, dpi = 300)
   invisible(card)
 }
@@ -262,7 +262,7 @@ player_card_eras <- function(fl, file = NULL, nickname = NULL, n_show = 8, shots
     scale_shape_manual(values = c(Made = 16, Missed = 1), name = NULL) +
     scale_colour_manual(values = ecol, guide = "none") +
     labs(title = "Every shot, era by era", subtitle = "Filled = made, open = missed") +
-    theme_court() + theme(legend.position = "top")
+    theme_project_court() + theme(legend.position = "top")
 
   # B: fingerprints side by side
   prof <- imap_dfr(fl, \(f, e) f$profile |> mutate(era = e)) |>
@@ -284,7 +284,7 @@ player_card_eras <- function(fl, file = NULL, nickname = NULL, n_show = 8, shots
   # C: best fits within each era
   pC <- imap(fl, \(f, e) fit_panel(f, "then", n_show = n_show,
                                    title = sprintf("Best %s fits, %s", f$target, e)) +
-               theme(plot.title = element_text(colour = ecol[[e]])))
+               theme(plot.title = ggtext::element_textbox_simple(colour = ecol[[e]], face = "bold")))
 
   # D: today -- which version of him fits where
   now_d <- imap_dfr(fl, \(f, e) f$fits |> filter(when == "now") |> mutate(era = e))
@@ -323,7 +323,7 @@ player_card_eras <- function(fl, file = NULL, nickname = NULL, n_show = 8, shots
                         "Fit = average of ROLE and SYSTEM; % = chance the franchise is the best fit; ",
                         "compare teams within a panel, against its dashed 'typical team' line."),
       caption = "Each era's fingerprint is relative to its own league and seasons. Data start in 2010/11.",
-      theme = theme_project(11) + theme(plot.title = element_text(size = 18, colour = col)))
+      theme = theme_project(11) + theme(plot.title = ggtext::element_textbox_simple(size = 18, colour = col, face = "bold", margin = margin(b = 4))))
   if (!is.null(file)) ggsave(file, card, width = 14, height = 15, dpi = 300)
   invisible(card)
 }
@@ -443,7 +443,7 @@ team_card <- function(f, file = NULL, n_show = 10) {
       title = sprintf("%s  ·  %s", f$name, span),
       subtitle = sprintf("%s. Fingerprints are relative to each league and season; similarities are point estimates.",
                          f$league),
-      theme = theme_project(11) + theme(plot.title = element_text(size = 18, colour = col)))
+      theme = theme_project(11) + theme(plot.title = ggtext::element_textbox_simple(size = 18, colour = col, face = "bold", margin = margin(b = 4))))
   if (!is.null(file)) ggsave(file, card, width = 13, height = 12, dpi = 300)
   invisible(card)
 }

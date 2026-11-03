@@ -25,7 +25,7 @@ f1 <- ggplot(long, aes(es, label, colour = league)) +
   geom_pointrange(aes(xmin = lo, xmax = hi), position = position_dodge(width = 0.55), size = 0.28) +
   scale_colour_manual(values = LEAGUE_COLOURS, name = NULL) +
   labs(x = "Playoff minus regular season, in SDs of the metric", y = NULL,
-       title = "What changes in the playoffs?",
+       title = "In the playoffs both leagues slow down, foul more and shoot worse",
        subtitle = "Posterior mean and 95% CrI from mixed models with team- and opponent-season effects",
        caption = caption) +
   theme_project()
@@ -42,7 +42,7 @@ f2 <- ggplot(ps, aes(p_nba_toward_el, reorder(label, p_nba_toward_el))) +
                       name = "NBA playoff shift points ...") +
   scale_x_continuous(limits = c(0, 1)) +
   labs(x = "Posterior probability that the NBA playoff shift points towards the EuroLeague level", y = NULL,
-       title = "Do the NBA playoffs look more 'European'?",
+       title = "NBA playoffs look more 'European' on 11 of 22 metrics: slower, more fouls and free throws, but not in shooting",
        subtitle = "Tests the 2019 paper's claim metric by metric", caption = caption) +
   theme_project()
 ggsave(fig("fig2_nba_toward_euroleague.png"), f2, width = 8, height = 6.5, dpi = 300)
@@ -55,6 +55,6 @@ f3 <- ggplot(zs, aes(shift_pp, zone, colour = league)) +
   geom_pointrange(aes(xmin = lo, xmax = hi), position = position_dodge(width = 0.5), size = 0.35) +
   scale_colour_manual(values = LEAGUE_COLOURS, name = NULL) +
   labs(x = "Change in share of attempts, playoffs - regular season (percentage points)", y = NULL,
-       title = "Shot selection in the playoffs", caption = caption) +
+       title = "In the playoffs EuroLeague teams swap rim shots for above-the-break threes", caption = caption) +
   theme_project()
 ggsave(fig("fig3_playoff_zone_shifts.png"), f3, width = 8, height = 3.8, dpi = 300)

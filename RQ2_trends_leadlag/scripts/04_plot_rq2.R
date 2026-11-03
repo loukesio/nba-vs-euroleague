@@ -34,7 +34,7 @@ f1 <- ggplot(curves, aes(season, colour = league, fill = league)) +
   scale_fill_manual(values = LEAGUE_COLOURS, name = NULL) +
   season_axis +
   labs(x = NULL, y = NULL,
-       title = "Fifteen seasons of change: NBA vs EuroLeague",
+       title = "In 15 seasons the NBA caught up with the EuroLeague's three-point habit, while the pace gap widened",
        subtitle = "Points: season means (regular season). Lines and bands: Bayesian smooth trend (RW2), 95% CrI. Grey lines: rule changes.",
        caption = paste("Grey lines: 2014/15 14-s reset after offensive rebounds (FIBA/EuroLeague); 2018/19 same rule in the NBA;",
                        "2019/20 COVID (NBA bubble, EuroLeague cancelled after the regular season); 2022/23 NBA take-foul rule.")) +
@@ -54,7 +54,7 @@ f2 <- ggplot(gaps, aes(season, fit)) +
   facet_wrap(~ label, scales = "free_y", ncol = 4) +
   season_axis +
   labs(x = NULL, y = "NBA minus EuroLeague",
-       title = "Are the leagues converging?",
+       title = "Shot mix and shooting converged; pace, free throws and rebounding drifted apart",
        subtitle = "Difference between the two smooth trends (95% CrI). A line moving towards 0 = converging.") +
   theme_project() + theme(axis.text.x = element_text(size = 6.5))
 ggsave(fig("fig2_convergence.png"), f2, width = 11, height = 8, dpi = 300)
@@ -71,7 +71,7 @@ f3 <- ggplot(lags |> mutate(label = factor(label, ord)), aes(k, label, fill = p)
            label = c("<- NBA follows", "EuroLeague follows ->"), size = 3, colour = "grey30") +
   coord_cartesian(clip = "off") +
   labs(x = "Lag k (seasons)", y = NULL,
-       title = "Does one league follow the other?",
+       title = "On threes the EuroLeague moves with the NBA or a season behind; on most other metrics there is no clear leader",
        subtitle = "Posterior probability of each lag in the shift model (EuroLeague = NBA trend shifted by k seasons)",
        caption = paste("Probability piling up at the edges (k = -5 or 5) means no lag inside the window fits well:",
                        "read it as 'no clear lead-lag', not as a 5-season lag. EuroLeague seasons 2006/07-2020/21.")) +
@@ -88,7 +88,7 @@ if (nrow(tgap)) {
     geom_vline(xintercept = 2025, linetype = 2, colour = "grey50") +
     scale_x_continuous(breaks = seq(2001, 2025, 4), labels = \(s) season_label(s)) +
     labs(x = "NBA season with the same level as the EuroLeague in 2025/26", y = NULL,
-         title = "The EuroLeague today looks like the NBA of ...",
+         title = "On volume, the EuroLeague of 2025/26 looks like the NBA of three to five seasons ago",
          subtitle = "Median and 90% interval over posterior draws; metrics where the NBA reached the EuroLeague's current level") +
     theme_project()
   ggsave(fig("fig4_time_gap.png"), f4, width = 8, height = 4.5, dpi = 300)

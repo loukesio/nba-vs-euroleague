@@ -36,14 +36,13 @@ f1 <- ggplot(poly, aes(px, py, group = hex_id, fill = pps)) +
   geom_polygon(colour = NA) +
   court_layer + half_court +
   facet_wrap(~ league) +
-  scale_fill_gradient2(low = "#2166AC", mid = "#F7F7F7", high = "#B2182B", midpoint = 1.05,
-                       limits = c(0.6, 1.5), oob = scales::squish, name = "Points per shot") +
-  labs(title = "Where the shots come from, and what they are worth",
-       subtitle = "Hexagon size = how often shots are taken there; colour = points per shot",
+  ggbasket::scale_fill_vs_average(midpoint = 1.05, limits = c(0.6, 1.5), name = "Points per shot") +
+  labs(title = "Same three-point share, different spots",
+       subtitle = "11% of NBA shots come from the corner against 4% in the EuroLeague; 36% of EuroLeague shots are above-the-break threes (NBA 30%). Hexagon size = how often shots are taken there; colour = points per shot",
        caption = caption_today) +
-  theme_court() +
+  theme_project_court() +
   theme(legend.key.width = unit(1.4, "cm"))
-ggsave(fig("fig1_shot_charts_today.png"), f1, width = 9, height = 4.6, dpi = 300)
+ggsave(fig("fig1_shot_charts_today.png"), f1, width = 8.5, height = 5.8, dpi = 300)
 
 # ---- Fig 2: difference in shot frequency on a common grid -------------------------------
 CELL <- 0.5
@@ -67,11 +66,11 @@ f2 <- ggplot(diff_grid, aes(gx, gy, fill = diff)) +
                        mid = "white", limits = c(-1.2, 1.2), oob = scales::squish,
                        name = "Share of all shots,\nNBA minus EuroLeague (pp)") +
   half_court +
-  labs(title = "Which spots does each league use more?",
+  labs(title = "NBA: corners and rim. EuroLeague: short twos and the top of the arc",
        subtitle = "Blue = more common in the NBA, orange = more common in the EuroLeague (0.5 m cells)",
-       caption = paste(caption_plain, "Solid lines: NBA court; dashed: EuroLeague (FIBA) court.\n", note_rim)) +
-  theme_court() + theme(legend.key.width = unit(1.2, "cm"))
-ggsave(fig("fig2_shot_difference_map.png"), f2, width = 7, height = 5.6, dpi = 300)
+       caption = paste(caption_plain, "Solid lines: NBA court; dashed: EuroLeague (FIBA) court.<br>", note_rim)) +
+  theme_project_court() + theme(legend.key.width = unit(1.2, "cm"))
+ggsave(fig("fig2_shot_difference_map.png"), f2, width = 7.5, height = 7.2, dpi = 300)
 
 # ---- Fig 3: zone profile (Bayesian estimates) -------------------------------------------
 zones <- tab("shot_zones_today.csv") |>
@@ -80,18 +79,18 @@ dodge <- position_dodge(width = 0.5)
 f3a <- ggplot(zones, aes(100 * share, zone, colour = league)) +
   geom_pointrange(aes(xmin = 100 * share_lo, xmax = 100 * share_hi), position = dodge, size = 0.35) +
   scale_colour_manual(values = LEAGUE_COLOURS, name = NULL) +
-  labs(x = "Share of field-goal attempts (%)", y = NULL, title = "Shot mix") + theme_project()
+  labs(x = "Share of field-goal attempts (%)", y = NULL, subtitle = "**Shot mix**") + theme_project()
 f3b <- ggplot(zones, aes(pps, zone, colour = league)) +
   geom_pointrange(aes(xmin = pps_lo, xmax = pps_hi), position = dodge, size = 0.35) +
   scale_colour_manual(values = LEAGUE_COLOURS, name = NULL) +
-  labs(x = "Points per shot", y = NULL, title = "Shot value") + theme_project() +
+  labs(x = "Points per shot", y = NULL, subtitle = "**Shot value**") + theme_project() +
   theme(axis.text.y = element_blank())
 f3 <- (f3a + f3b) + plot_layout(guides = "collect") +
-  plot_annotation(title = "Shot profile by zone, typical team",
-                  subtitle = "Posterior means and 95% credible intervals (binomial models with team-season effects)",
+  plot_annotation(title = "Corner threes: rare in the EuroLeague, but worth more",
+                  subtitle = "Corner threes: 4% of EuroLeague shots at 1.28 points per shot, 11% of NBA shots at 1.16. Posterior means and 95% credible intervals (binomial models with team-season effects)",
                   caption = caption_plain, theme = theme_project()) &
   theme(legend.position = "top")
-ggsave(fig("fig3_zone_profile.png"), f3, width = 9, height = 4, dpi = 300)
+ggsave(fig("fig3_zone_profile.png"), f3, width = 9, height = 5.2, dpi = 300)
 
 # ---- Fig 4: distance profile ----------------------------------------------------------------
 dp <- tab("distance_profile_today.csv") |> mutate(league = factor(league, LEAGUES))
@@ -100,7 +99,7 @@ f4a <- ggplot(dp, aes(band, 100 * share, colour = league)) +
   geom_vline(data = lines_df, aes(xintercept = d, colour = league), linetype = 2, linewidth = 0.4) +
   geom_line(linewidth = 0.7) +
   scale_colour_manual(values = LEAGUE_COLOURS, name = NULL) +
-  labs(x = NULL, y = "% of attempts (per 25 cm)", title = "How far from the basket?") + theme_project()
+  labs(x = NULL, y = "% of attempts (per 25 cm)", subtitle = "**How far from the basket?**") + theme_project()
 f4b <- ggplot(dp |> filter(n >= 200), aes(band, 100 * fg, colour = league)) +
   geom_vline(data = lines_df, aes(xintercept = d, colour = league), linetype = 2, linewidth = 0.4) +
   geom_ribbon(aes(ymin = 100 * (fg - 2 * fg_se), ymax = 100 * (fg + 2 * fg_se), fill = league),
@@ -108,12 +107,12 @@ f4b <- ggplot(dp |> filter(n >= 200), aes(band, 100 * fg, colour = league)) +
   geom_line(linewidth = 0.7) +
   scale_colour_manual(values = LEAGUE_COLOURS, name = NULL) +
   scale_fill_manual(values = LEAGUE_COLOURS, guide = "none") +
-  labs(x = "Distance from the basket (m)", y = "FG%", title = "How accurate?") + theme_project() +
+  labs(x = "Distance from the basket (m)", y = "FG%", subtitle = "**How accurate?**") + theme_project() +
   theme(legend.position = "none")
 f4 <- (f4a / f4b) + plot_annotation(
-  title = "Shot distance and accuracy",
-  subtitle = "Dashed lines: 3-point line at the top of the arc (NBA 7.24 m, EuroLeague 6.75 m)",
-  caption = paste0(caption_plain, "\n", note_rim), theme = theme_project())
+  title = "Threes come from just behind each league's own line",
+  subtitle = "Beyond 2.5 m the two leagues are equally accurate. Dashed lines: 3-point line at the top of the arc (NBA 7.24 m, EuroLeague 6.75 m)",
+  caption = paste0(caption_plain, "<br>", note_rim), theme = theme_project())
 ggsave(fig("fig4_distance_profile.png"), f4, width = 7.5, height = 6.5, dpi = 300)
 
 # ---- Fig 5: box-score differences (standardised) --------------------------------------------
@@ -132,7 +131,7 @@ f5 <- ggplot(bd, aes(effect_size, label)) +
                       labels = c(`TRUE` = "Higher in the NBA", `FALSE` = "Higher in the EuroLeague"), name = NULL) +
   scale_x_continuous(expand = expansion(mult = 0.35)) +
   labs(x = "Difference NBA - EuroLeague, in game-to-game SDs", y = NULL,
-       title = "How the leagues differ today (box scores)",
+       title = "The two leagues now shoot alike; the NBA plays faster and the EuroLeague fouls far more",
        subtitle = "Posterior mean and 95% CrI from mixed models with team- and opponent-season effects",
        caption = caption_plain) +
   theme_project()
@@ -147,9 +146,9 @@ if (file.exists(sp_path)) {
     geom_tile(width = 0.5, height = 0.5) +
     court_layer + half_court + facet_wrap(~ league) +
     scale_fill_viridis_c(option = "magma", limits = c(25, 65), oob = scales::squish, name = "P(make), %") +
-    labs(title = "Modelled shooting accuracy across the court",
+    labs(title = "EuroLeague accuracy falls off faster on the mid-range wings and deep beyond the arc",
          subtitle = "Bayesian binomial model with a smooth 2-D surface per league (posterior mean)",
          caption = caption_today) +
-    theme_court() + theme(legend.key.width = unit(1.2, "cm"))
-  ggsave(fig("fig6_accuracy_surface.png"), f6, width = 9, height = 4.6, dpi = 300)
+    theme_project_court() + theme(legend.key.width = unit(1.2, "cm"))
+  ggsave(fig("fig6_accuracy_surface.png"), f6, width = 8.5, height = 5.8, dpi = 300)
 }

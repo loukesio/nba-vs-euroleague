@@ -26,3 +26,6 @@ RQ2_trends_leadlag/models/*
 manuscript/figures/
 manuscript/*.typ
 !manuscript/manuscript.pdf
+ggbasket.gif
+manuscript/*.log
+manuscript/*.tex

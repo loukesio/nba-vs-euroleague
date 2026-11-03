@@ -1,0 +1,25 @@
+# separate repository (the ggbasket R package)
+ggbasket/
+# data live on the external drive; RQ*/data and 00_data/store are links to it
+RQ*/data
+00_data/store
+00_data/pbp_2024/
+# third-party documents
+*.pdf
+*.zip
+# build products, caches, logs
+.stan_cache/
+logs/
+report.html
+report_render_log.txt
+QUEUE_DONE.txt
+*_files/
+.quarto/
+manuscript/*.html
+.Rproj.user/
+.Rhistory
+.RData
+.DS_Store
+# compiled Stan models (rebuilt from the .stan files)
+RQ2_trends_leadlag/models/*
+!RQ2_trends_leadlag/models/*.stan

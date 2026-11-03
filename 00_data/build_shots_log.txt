@@ -1,0 +1,41 @@
+Warning message:
+package ‘ggplot2’ was built under R version 4.5.2 
+Warning messages:
+1: package ‘dplyr’ was built under R version 4.5.2 
+2: package ‘purrr’ was built under R version 4.5.2 
+3: package ‘arrow’ was built under R version 4.5.2 
+# A tibble: 32 × 5
+   league     season      n p3_share    fg
+   <chr>       <int>  <int>    <dbl> <dbl>
+ 1 EuroLeague   2010  22302    0.327 0.451
+ 2 EuroLeague   2011  22387    0.328 0.451
+ 3 EuroLeague   2012  30116    0.345 0.457
+ 4 EuroLeague   2013  30493    0.349 0.460
+ 5 EuroLeague   2014  31065    0.361 0.455
+ 6 EuroLeague   2015  30403    0.372 0.456
+ 7 EuroLeague   2016  31928    0.368 0.464
+ 8 EuroLeague   2017  31876    0.372 0.471
+ 9 EuroLeague   2018  31820    0.376 0.474
+10 EuroLeague   2019  31108    0.401 0.467
+11 EuroLeague   2020  39223    0.396 0.473
+12 EuroLeague   2021  35973    0.399 0.463
+13 EuroLeague   2022  39939    0.412 0.470
+14 EuroLeague   2023  40934    0.405 0.473
+15 EuroLeague   2024  41150    0.413 0.476
+16 EuroLeague   2025  51372    0.414 0.474
+17 NBA          2010 212330    0.222 0.457
+18 NBA          2011 174465    0.226 0.447
+19 NBA          2012 215105    0.244 0.452
+20 NBA          2013 218408    0.261 0.454
+21 NBA          2014 219264    0.270 0.448
+22 NBA          2015 222339    0.286 0.451
+23 NBA          2016 223324    0.318 0.457
+24 NBA          2017 225523    0.338 0.460
+25 NBA          2018 233717    0.360 0.459
+26 NBA          2019 202223    0.387 0.460
+27 NBA          2020 205754    0.392 0.466
+28 NBA          2021 231293    0.400 0.461
+29 NBA          2022 231870    0.388 0.474
+30 NBA          2023 232542    0.395 0.474
+31 NBA          2024 233904    0.421 0.466
+32 NBA          2025 233632    0.414 0.470

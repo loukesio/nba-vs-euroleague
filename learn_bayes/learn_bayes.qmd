@@ -1,0 +1,304 @@
+---
+title: "Learning Bayesian modelling with NBA vs EuroLeague data"
+subtitle: "A guided tour of every model in this project"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: show
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| code-fold: true
+source(here::here("R", "config.R"))
+source(here::here("R", "metrics.R"))
+source(here::here("R", "bayes.R"))
+source(here::here("R", "data.R"))
+source(here::here("R", "theme.R"))
+suppressMessages({ library(tidyr); library(ggplot2); library(bayesplot) })
+theme_set(theme_project())
+tg <- load_team_games(SEASONS_LONG)
+```
+
+This notebook is a companion to the analysis scripts. Every section takes one model used in the
+project, explains it in words, and shows how to check that it does what we think it does.
+The order goes from simple to more advanced:
+
+| # | Model | Where it is used | New idea |
+|---|---|---|---|
+| 1 | Season means around a line | RQ2, replication of the 2019 paper | Hierarchical model, sufficient statistics, centred vs non-centred |
+| 2 | Mixed model with team/opponent effects | RQ1, RQ3 | Random effects, priors on a standardised scale, posterior contrasts |
+| 3 | Binomial model with logit link | RQ1/RQ3 shot zones | Generalised linear models, overdispersion |
+| 4 | Random-walk smooth trend | RQ2 | Latent time series, controlling wiggliness with a prior |
+| 5 | Shift model with a discrete lag | RQ2 | Marginalising out a discrete parameter |
+| 6 | 2-D spatial smooth | RQ1 accuracy surface | Splines in brms |
+
+The workflow is the same for all of them:
+**write the model → choose priors → check priors make sense → fit → check the sampler
+(R-hat, ESS, divergences) → check the fit to data (posterior predictive) → read the posterior.**
+
+# 1. The 2019 paper's model: season means around a line
+
+## The model
+
+For one league and one variable (say possessions per game), game $i$ in season $j$:
+
+$$
+y_{ij} \sim \text{Normal}(\mu_j, \sigma_j), \qquad
+\mu_j \sim \text{Normal}(\mu + s\,(t_j - 2008),\ \sigma)
+$$
+
+Two levels: games scatter around their season mean $\mu_j$; season means scatter around a
+straight line with intercept $\mu$ and slope $s$. This is a *hierarchical* model: the season
+means are parameters, and they share information through the line.
+
+## Trick 1: sufficient statistics
+
+The NBA has ~2,500 team-games per season. Fitting the game-level model directly
+(`brms`: `bf(y ~ 1 + t_c + (1 | season), sigma ~ 0 + season)`) took over 10 minutes per fit.
+But if games within a season are i.i.d. normal, the **count, mean and variance** of each season
+contain *all* the information about $\mu_j$ and $\sigma_j$:
+
+$$
+\bar y_j \sim \text{Normal}\!\left(\mu_j, \tfrac{\sigma_j}{\sqrt{n_j}}\right), \qquad
+\frac{(n_j-1)\,s_j^2}{\sigma_j^2} \sim \chi^2_{n_j-1}
+$$
+
+So `RQ2_trends_leadlag/models/paper_trend.stan` takes 3 numbers per season instead of 2,500
+and returns the *same* posterior in about a second. Read the Stan file: note the extra
+`log(n - 1) - 2 * log(sigma_j)` term. That is the Jacobian, needed because we put a density
+on $s_j^2$ but wrote it as a $\chi^2$ density of a transformed quantity.
+
+## Did it work? Replicating Table 1
+
+```{r replication}
+rep <- read.csv(here::here("RQ2_trends_leadlag/results/tables/replication_vs_published.csv"))
+summarise(rep, max_abs_diff = max(abs(mean - published)), max_rhat = max(max_rhat))
+```
+
+```{r}
+#| echo: false
+knitr::include_graphics(here::here("RQ2_trends_leadlag/results/figures/rq2_replication_check.png"))
+```
+
+All 68 estimates match the paper to within rounding. **Always validate a model on data where
+you know the answer before using it on new data.**
+
+## Lesson: centred vs non-centred parameterisation
+
+A few fits first showed *divergent transitions*: the sampler hits a region of very high
+curvature. This happens when the between-season SD $\sigma$ approaches 0 (the "funnel").
+The textbook fix is the **non-centred** form, $\mu_j = \mu + s\,t_j + \sigma z_j$ with
+$z_j \sim N(0,1)$. We tried it, and it was *worse* (R-hat up to 1.22). Why? Non-centring helps
+when the data say little about each $\mu_j$. Here every season mean is pinned down by
+thousands of games, so the centred form is better. We kept the centred form and raised
+`adapt_delta` to 0.99 (smaller, more careful steps); 16 divergences remained out of 340,000
+draws. **The right parameterisation depends on how informative the data are.**
+
+# 2. Mixed models with team and opponent effects (RQ1, RQ3)
+
+## The model
+
+```r
+bf(z ~ 0 + league + (1 | team_season) + (1 | opp_season), sigma ~ 0 + league)
+```
+
+* `z` is the metric **standardised** (mean 0, SD 1). Then a prior like `normal(0, 1.5)` on the
+  league means is sensible for *every* metric: free throws per foul or minutes entropy alike.
+* `(1 | team_season)`: each team-season has its own level, drawn from a normal distribution
+  whose SD is estimated. Games of one team are correlated; ignoring that would make us
+  overconfident.
+* `(1 | opp_season)`: the opponent matters too (blocks depend on who you play).
+* `sigma ~ 0 + league`: the game-to-game noise may differ by league (distributional regression).
+
+## Prior predictive check
+
+Before fitting, simulate data *from the priors alone* and ask: is this plausible?
+
+```{r prior-pred}
+d <- tg |> filter(season %in% TODAY_SEASONS, phase == "regular") |>
+  mutate(z = (pace40 - mean(pace40, na.rm = TRUE)) / sd(pace40, na.rm = TRUE)) |>
+  filter(is.finite(z)) |> slice_sample(n = 2000)
+pp <- brm(bf(z ~ 0 + league + (1 | team_season) + (1 | opp_season), sigma ~ 0 + league),
+          data = d, sample_prior = "only", chains = 1, iter = 600, refresh = 0, seed = 1, silent = 2,
+          prior = c(prior(normal(0, 1.5), class = "b"), prior(normal(0, 1), class = "sd"),
+                    prior(normal(0, 1), class = "b", dpar = "sigma")))
+pp_check(pp, ndraws = 30) + coord_cartesian(xlim = c(-15, 15)) +
+  labs(title = "Prior predictive: simulated z-scores vs the real data (dark line)")
+```
+
+The priors allow a wide range of values, including some silly ones (|z| of 10), but they don't
+rule out anything realistic. That is what *weakly informative* means.
+
+## Checking a fitted model
+
+```{r fitted}
+fit <- readRDS(file.path(DATA_ROOT, "RQ1", "models", "box_pace40.rds"))
+diagnostics(fit)
+pp_check(fit, ndraws = 30) + labs(title = "Posterior predictive check: pace per 40 min")
+```
+
+* **R-hat** ≈ 1.00: the 4 chains agree. Values above 1.01 mean "run longer or fix the model".
+* **ESS** (effective sample size): the number of independent draws the chains are worth.
+  Bulk-ESS above ~400 is enough for means and intervals.
+* **Divergences**: should be 0.
+* **pp_check**: data simulated from the fitted model should look like the real data.
+
+## Reading the posterior: contrasts
+
+The question "how much faster is the NBA?" is a function of parameters, so we compute it
+**draw by draw** and summarise at the end:
+
+```{r contrast}
+dr <- as_draws_df(fit)
+today <- tg |> filter(season %in% TODAY_SEASONS, phase == "regular", is.finite(pace40))
+s <- sd(today$pace40)   # the SD used to standardise; differences only need the scale
+diff <- s * (dr$b_leagueNBA - dr$b_leagueEuroLeague)
+c(mean = mean(diff), quantile(diff, c(.025, .975)), P_NBA_faster = mean(diff > 0))
+```
+
+There's no p-value and no t-test: the posterior of the difference *is* the answer, including
+statements like "probability the NBA is faster".
+
+# 3. Binomial models: shot zones
+
+Counts out of totals (corner threes out of all shots; makes out of attempts) are binomial:
+
+```r
+bf(n_zone | trials(n_total) ~ 0 + league + (1 | team_season)), family = binomial()
+```
+
+The coefficients live on the **logit** scale; `plogis()` turns them into probabilities.
+The team-season random effect is important: without it the model treats 200,000 NBA shots as
+independent, and the intervals become absurdly narrow. Real teams differ in style, so the
+effective sample size is closer to the number of *teams* than of shots.
+
+```{r zones}
+read.csv(here::here("RQ1_differences_today/results/tables/shot_zones_today.csv")) |>
+  select(zone, league, share, share_lo, share_hi, pps) |> mutate(across(where(is.numeric), \(x) round(x, 3)))
+```
+
+# 4. Smooth trends: a second-order random walk
+
+The 2019 model forces a straight line. The NBA's three-point growth is not straight. The RW2
+model (`season_curve.stan`) says the trend **keeps its slope** unless the data push it:
+
+$$
+f_t = 2 f_{t-1} - f_{t-2} + \omega\,\varepsilon_t, \qquad \varepsilon_t \sim N(0,1)
+$$
+
+$\omega$ controls wiggliness: $\omega=0$ gives a straight line (the 2019 model is a special case),
+large $\omega$ follows every bump. We put a half-normal(0, 0.3) prior on $\omega$ (on the
+standardised scale), which prefers smooth curves, and let the data decide.
+
+```{r rw2-demo}
+sm <- season_means(tg |> filter(league == "NBA", phase == "regular", season %in% SEASONS), "p3a_share")
+f <- fit_season_curve(sm)
+tibble(season = sm$season, obs = sm$mean, fit = colMeans(f),
+       lo = apply(f, 2, quantile, .025), hi = apply(f, 2, quantile, .975)) |>
+  ggplot(aes(season)) + geom_ribbon(aes(ymin = lo, ymax = hi), alpha = .2) +
+  geom_line(aes(y = fit)) + geom_point(aes(y = obs)) +
+  labs(title = "NBA: share of shots from three, RW2 trend", y = NULL)
+```
+
+**A lesson learned the hard way.** The first version sampled the curve $f$ directly. When $\omega$ is
+small, all the $f_t$ are tied together. That is the funnel again, and it gave divergences and R-hat up
+to 1.3 in *both* the centred and the non-centred form. The fix: everything in this model is
+Gaussian, so $f$ can be **integrated out with pen and paper**. Writing $f = M u$ with
+$u = (f_1, \text{slope}, \varepsilon_3, \dots)$, the season means are jointly
+$\text{MultiNormal}(0,\ M D M^\top + R)$, where $D = \text{diag}(4, 1, \omega^2, \dots)$ and
+$R = \text{diag}(se^2 + \tau^2)$. Stan then only samples $\omega$ and $\tau$ (no funnel left), and
+draws of $f$ are generated afterwards from the exact Gaussian conditional $f \mid y$. Result: 0
+divergences and R-hat ≤ 1.005. **When part of a model is Gaussian, integrating it out is often the
+best reparameterisation of all.** The lead–lag model (next section) uses the same trick.
+
+A neat consequence: because we have **draws of the whole curve**, any question about it has a
+posterior. "Did the gap between leagues shrink?" is just
+`mean(abs(gap_2025) < abs(gap_2010))` over the draws.
+
+# 5. A discrete parameter: the lag between leagues
+
+The shift model (`lead_lag.stan`) asks whether the EuroLeague's curve is the NBA's curve
+shifted by $k$ seasons. $k$ is an integer, and Stan's sampler (HMC) needs continuous
+parameters. The solution is to **marginalise**: sum the likelihood over all values of $k$,
+
+$$
+p(\text{data}) = \sum_{k=-5}^{5} p(k)\, p(\text{data} \mid k),
+$$
+
+which in Stan is `target += log_sum_exp(lp)`. In `generated quantities` we recover
+$P(k \mid \text{data})$ with `softmax(lp)`. This is the same trick used for mixture models and
+change-point models.
+
+```{r lags}
+read.csv(here::here("RQ2_trends_leadlag/results/tables/lead_lag_summary.csv")) |>
+  select(label, k_mode, p_mode, p_el_follows, p_nba_follows) |>
+  mutate(across(where(is.numeric), \(x) round(x, 2)))
+```
+
+**Caution.** With ~25 seasons, a smooth trend can often be shifted a few years either way
+and still fit. A flat posterior over $k$ is an honest "the data can't tell", not a failure.
+
+# 6. A 2-D smooth: accuracy across the court
+
+```r
+bf(made | trials(n) ~ league + t2(x_abs, y, by = league, k = 8)), family = binomial()
+```
+
+`t2()` is a tensor-product spline: a flexible surface over the court. brms turns the spline
+wiggliness into a random effect (the `sds` parameters), so the amount of smoothing is
+*estimated*, not chosen by hand. We count shots on a 0.5 m grid first: the binomial likelihood
+of a cell with 300 shots is exactly the product of 300 Bernoulli likelihoods, but 1,000× faster.
+This is the same idea as the sufficient statistics in Section 1.
+
+# 7. Shrinkage without MCMC: conjugate priors (RQ4)
+
+RQ4 needs a style profile for about 8,600 player-seasons and team-seasons. A player with 60 shots
+who took 40% of them from the corner is probably not a corner specialist; he is probably just lucky.
+**Shrinkage** pulls small samples towards the average, and pulls large samples hardly at all.
+
+Some prior-likelihood pairs give a posterior in the *same family* as the prior: they are
+**conjugate**, and the posterior can be written down directly, with no sampling algorithm:
+
+| data | prior | posterior |
+|---|---|---|
+| zone counts $n_1..n_5$ ~ Multinomial($p$) | $p$ ~ Dirichlet($\alpha m$) | Dirichlet($\alpha m + n$) |
+| assists $y$ ~ Poisson($\lambda E$), $E$ = possessions | $\lambda$ ~ Gamma($\kappa$, $\kappa/\mu$) | Gamma($\kappa + y$, $\kappa/\mu + E$) |
+
+Read the Dirichlet posterior as **"the prior is worth $\alpha$ imaginary shots"** taken with the
+league's average shot mix $m$. With $\alpha = 100$, a player with 60 real shots would end up closer
+to the league average than to his own numbers; with 1,000 shots his own numbers would dominate.
+In practice the data choose small values (7–26 shots, below): players at the same position really do
+take very different shots, so the prior is weak and only small samples are pulled noticeably.
+
+**Who chooses $\alpha$?** The data do. Across all players, the *marginal* likelihood of the counts
+(the Dirichlet-multinomial, i.e. the likelihood with $p$ integrated out) depends only on $\alpha$.
+Maximising it is **empirical Bayes**. It is the same "integrate out, then fit" idea as Section 4,
+and it is what a full hierarchical model would do, but with $\alpha$ fixed at its best value rather
+than given its own prior.
+
+```{r eb}
+read.csv(here::here("RQ4_ahead_of_their_time/results/tables/player_prior_strength.csv")) |>
+  mutate(across(where(is.numeric), \(x) round(x)))
+```
+
+`dirichlet_alpha` is the prior's weight in shots, per league and position. The other columns are
+$\kappa$ for each rate. Because posteriors are closed-form, `R/style.R` draws 300–400 samples per
+player in a fraction of a second. Each draw is pushed through the rest of the analysis (distances,
+time positions), so every RQ4 number has a credible interval. "P(most typical)" is simply the
+share of draws in which a player is the closest to the league average.
+
+**What we gave up.** Empirical Bayes treats $\alpha$ and $\kappa$ as known, so intervals are a little
+too narrow. With hundreds of players per league that error is small; with ten it would not be.
+
+# Further reading
+* McElreath, *Statistical Rethinking* (2nd ed.): the best introduction; chapters 9 (MCMC),
+  13 (multilevel models), 14 (adventures in covariance).
+* Gelman et al. (2020), *Bayesian Workflow*, arXiv:2011.01808: the check-fit-check loop.
+* Stan User's Guide: "Reparameterization" (centred vs non-centred) and "Latent discrete
+  parameters" (marginalisation).
+* Bürkner, brms vignettes: `vignette("brms_distreg")` (modelling sigma), `vignette("brms_multilevel")`.

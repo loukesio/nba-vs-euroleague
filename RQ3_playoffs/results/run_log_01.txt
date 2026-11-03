@@ -1,0 +1,288 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package ‘dplyr’ was built under R version 4.5.2 
+Warning messages:
+1: package ‘Rcpp’ was built under R version 4.5.2 
+2: package ‘posterior’ was built under R version 4.5.3 
+Warning messages:
+1: package ‘tidyr’ was built under R version 4.5.2 
+2: package ‘purrr’ was built under R version 4.5.2 
+Loading required namespace: rstan
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 3482.8 seconds.
+Chain 2 finished in 3516.1 seconds.
+Chain 4 finished in 3516.3 seconds.
+Chain 3 finished in 3539.5 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 3513.7 seconds.
+Total execution time: 3539.8 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 1332.8 seconds.
+Chain 1 finished in 1453.7 seconds.
+Chain 2 finished in 1501.5 seconds.
+Chain 3 finished in 1508.9 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 1449.2 seconds.
+Total execution time: 1509.3 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 623.2 seconds.
+Chain 2 finished in 661.2 seconds.
+Chain 1 finished in 708.8 seconds.
+Chain 3 finished in 715.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 677.2 seconds.
+Total execution time: 716.0 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 581.6 seconds.
+Chain 1 finished in 605.1 seconds.
+Chain 2 finished in 648.0 seconds.
+Chain 3 finished in 693.9 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 632.2 seconds.
+Total execution time: 694.4 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 793.7 seconds.
+Chain 4 finished in 842.9 seconds.
+Chain 2 finished in 881.4 seconds.
+Chain 3 finished in 926.5 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 861.2 seconds.
+Total execution time: 927.0 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 736.3 seconds.
+Chain 2 finished in 744.0 seconds.
+Chain 3 finished in 773.9 seconds.
+Chain 4 finished in 780.3 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 758.6 seconds.
+Total execution time: 781.1 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 2 finished in 1002.8 seconds.
+Chain 3 finished in 1027.7 seconds.
+Chain 1 finished in 1166.2 seconds.
+Chain 4 finished in 1171.5 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 1092.1 seconds.
+Total execution time: 1172.2 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 799.1 seconds.
+Chain 2 finished in 814.1 seconds.
+Chain 4 finished in 836.3 seconds.
+Chain 3 finished in 856.5 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 826.5 seconds.
+Total execution time: 857.0 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 798.8 seconds.
+Chain 1 finished in 935.8 seconds.
+Chain 2 finished in 937.5 seconds.
+Chain 3 finished in 971.3 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 910.8 seconds.
+Total execution time: 971.9 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 832.8 seconds.
+Chain 1 finished in 883.6 seconds.
+Chain 2 finished in 893.4 seconds.
+Chain 3 finished in 986.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 899.0 seconds.
+Total execution time: 986.5 seconds.
+
+Warning: 150 of 3000 (5.0%) transitions ended with a divergence.
+See https://mc-stan.org/misc/warnings for details.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 723.6 seconds.
+Chain 4 finished in 726.4 seconds.
+Chain 2 finished in 773.0 seconds.
+Chain 3 finished in 782.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 751.2 seconds.
+Total execution time: 782.5 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 745.4 seconds.
+Chain 3 finished in 755.4 seconds.
+Chain 1 finished in 757.5 seconds.
+Chain 2 finished in 776.7 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 758.7 seconds.
+Total execution time: 777.1 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 2 finished in 803.9 seconds.
+Chain 1 finished in 920.0 seconds.
+Chain 3 finished in 937.8 seconds.
+Chain 4 finished in 941.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 900.7 seconds.
+Total execution time: 941.4 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 660.1 seconds.
+Chain 4 finished in 699.1 seconds.
+Chain 2 finished in 711.0 seconds.
+Chain 3 finished in 731.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 700.4 seconds.
+Total execution time: 731.6 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 538.8 seconds.
+Chain 1 finished in 560.4 seconds.
+Chain 2 finished in 561.8 seconds.
+Chain 3 finished in 577.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 559.5 seconds.
+Total execution time: 577.4 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 560.8 seconds.
+Chain 2 finished in 622.3 seconds.
+Chain 1 finished in 639.9 seconds.
+Chain 3 finished in 669.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 623.1 seconds.
+Total execution time: 669.7 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 556.2 seconds.
+Chain 1 finished in 592.5 seconds.
+Chain 3 finished in 638.3 seconds.
+Chain 2 finished in 643.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 607.6 seconds.
+Total execution time: 643.5 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 2 finished in 553.0 seconds.
+Chain 4 finished in 571.1 seconds.
+Chain 3 finished in 592.4 seconds.
+Chain 1 finished in 596.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 578.1 seconds.
+Total execution time: 596.2 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 595.5 seconds.
+Chain 2 finished in 604.7 seconds.
+Chain 1 finished in 624.3 seconds.
+Chain 3 finished in 644.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 617.1 seconds.
+Total execution time: 644.4 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 520.1 seconds.
+Chain 1 finished in 526.2 seconds.
+Chain 2 finished in 533.5 seconds.
+Chain 3 finished in 562.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 535.6 seconds.
+Total execution time: 562.9 seconds.
+
+# A tibble: 22 × 7
+   label      po_shift_nba p_nba_up po_shift_el p_el_up p_nba_toward_el max_rhat
+   <chr>             <dbl>    <dbl>       <dbl>   <dbl>           <dbl>    <dbl>
+ 1 Possessio…    -2.20        0        -1.35     0              1           1.01
+ 2 Possessio…    -1.79        0        -1.28     0              1           1.01
+ 3 Minutes e…    -0.0858      0        -0.0267   0              0           1.01
+ 4 Points pe…    -1.38        0        -2.05     0              0.0563      1.02
+ 5 Effective…    -0.0133      0        -0.0158   0              0           1.02
+ 6 Free-thro…     0.0130      1         0.00674  0.943          1           1.02
+ 7 Offensive…    -0.00102     0.257    -0.00647  0.0493         0.257       1.01
+ 8 Defensive…    -0.000226    0.445    -0.00128  0.374          0.555       1.01
+ 9 3PA share…     0.00461     1.000     0.0221   1              1.000       1.05
+10 2P%           -0.0121      0        -0.0161   0              0           1.01
+11 3P%           -0.0152      0        -0.0102   0.0133         0.003       1.01
+12 FT%           -0.00552     0.003    -0.0139   0.006          0.990       1.04
+13 FTA per 1…     1.35        1         0.855    0.994          1           1.01
+14 2PA per 1…    -0.510       0        -1.68     0              1           1.05
+15 3PA per 1…     0.252       0.991     1.63     1              0.986       1.05
+16 Assists p…    -1.45        0        -0.992    0              0.979       1.01
+17 Blocks pe…     0.163       0.999    -0.162    0.041          0.00133     1.02
+18 Steals pe…    -0.322       0        -0.555    0              0           1.01
+19 Turnovers…    -0.431       0        -0.279    0.062          0           1.01
+20 Fouls per…     1.62        1         1.69     1              1           1.01
+21 FTA per f…    -0.0247      0        -0.0111   0.118          1           1.01
+22 Rebounds …     0.183       0.959     0.135    0.709          0.0413      1.01

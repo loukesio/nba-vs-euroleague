@@ -1,0 +1,25 @@
+Warning message:
+package ‘ggplot2’ was built under R version 4.5.2 
+Warning messages:
+1: package ‘Rcpp’ was built under R version 4.5.2 
+2: package ‘posterior’ was built under R version 4.5.3 
+3: package ‘dplyr’ was built under R version 4.5.2 
+Warning message:
+package ‘tidyr’ was built under R version 4.5.2 
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 127.7 seconds.
+Chain 2 finished in 128.2 seconds.
+Chain 4 finished in 130.0 seconds.
+Chain 3 finished in 132.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 129.5 seconds.
+Total execution time: 132.5 seconds.
+
+Loading required namespace: rstan
+# A tibble: 1 × 4
+  max_rhat min_ess_bulk min_ess_tail divergences
+     <dbl>        <dbl>        <dbl>       <dbl>
+1     1.00         824.        1304.           0

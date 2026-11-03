@@ -1,0 +1,351 @@
+---
+title: "NBA vs EuroLeague, 2010/11–2025/26"
+subtitle: "A Bayesian update of Mandić et al. (2019, PLOS ONE)"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    fig-width: 9
+    theme: cosmo
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(dplyr); library(knitr)
+here <- here::here
+tab <- function(rq, f) read.csv(here(rq, "results", "tables", f))
+fig <- function(rq, f) here(rq, "results", "figures", f)
+r1 <- "RQ1_differences_today"; r2 <- "RQ2_trends_leadlag"; r3 <- "RQ3_playoffs"; r4 <- "RQ4_ahead_of_their_time"
+pct <- \(x, d = 1) sprintf(paste0("%.", d, "f%%"), 100 * x)
+num <- \(x, d = 1) formatC(x, format = "f", digits = d)
+has <- \(rq, f) file.exists(here(rq, "results", "tables", f))
+season_label <- function(s) sprintf("%d/%02d", s, (s + 1) %% 100)
+
+box   <- tab(r1, "box_differences_today.csv")
+zones <- tab(r1, "shot_zones_today.csv")
+rep   <- tab(r2, "replication_vs_published.csv")
+conv  <- tab(r2, "convergence_2010_2025.csv")
+lag   <- tab(r2, "lead_lag_summary.csv")
+tgap  <- tab(r2, "time_gap_today.csv")
+b  <- \(m, col) box[[col]][box$metric == m]
+z  <- \(zn, lg, col) zones[[col]][zones$zone == zn & zones$league == lg]
+cv <- \(m, col) conv[[col]][conv$metric == m]
+```
+
+## Summary
+
+* **Today (2023/24–2025/26) the two leagues shoot equally well**: 3P% (`r pct(b("p3_pct","nba"))` vs
+  `r pct(b("p3_pct","el"))`), FT%, eFG% and the share of shots taken from three
+  (`r pct(b("p3a_share","nba"))` vs `r pct(b("p3a_share","el"))`) are practically identical.
+* **They differ in style.** The NBA plays faster (`r num(b("pace40","nba"))` vs
+  `r num(b("pace40","el"))` possessions per 40 minutes), blocks more and gets more free throws per foul.
+  The EuroLeague fouls far more (`r num(b("fcm_100","el"))` vs `r num(b("fcm_100","nba"))` per 100
+  possessions), turns the ball over more and rebounds more on offence.
+* **Shot locations differ even though the three-point share is equal.** NBA teams take
+  `r pct(z("Corner 3","NBA","share"))` of their shots from the corner vs `r pct(z("Corner 3","EuroLeague","share"))`
+  in the EuroLeague. The EuroLeague takes more short mid-range shots and more above-the-break threes.
+* **Since 2010/11 the shot mix has converged and pace has diverged.** The NBA closed an 11-point gap in
+  three-point share. Meanwhile the pace gap grew from `r num(cv("pace40","gap_first"))` to
+  `r num(cv("pace40","gap_last"))` possessions per 40 minutes.
+* **Who follows whom?** For the three-point revolution the EuroLeague trails the NBA by about one season
+  or moves in step with it. On volume measures, the EuroLeague today looks like the NBA of about 3–5
+  seasons ago (3PA, assists and points per 100 possessions). For most other metrics the data cannot
+  tell who leads.
+* The 2019 paper's model was **re-implemented and validated** on the authors' own data: all 68 published
+  estimates are reproduced within `r num(max(abs(rep$mean - rep$published)), 3)`.
+
+## Data and methods
+
+| | Source | Seasons |
+|---|---|---|
+| NBA box scores, player minutes | hoopR / sportsdataverse (ESPN) | 2001/02–2025/26 (minutes from 2010/11) |
+| NBA shot locations | hoopR (NBA Stats) | 2010/11–2025/26 |
+| EuroLeague box scores | official API | 2001/02–2025/26 |
+| EuroLeague shot locations | official API | 2010/11–2025/26 |
+
+The metrics follow the 2019 paper exactly. Possessions are 2PA + 3PA + 0.5·FTA + TOV, counts are per
+100 possessions, the four factors are computed for each team and its opponent, and rotation is measured
+by the entropy of minutes played. Added here: possessions per 40 minutes, points per 100 possessions and
+the share of attempts taken from three.
+
+All models are Bayesian and fitted with Stan (brms/cmdstanr). Every reported model passed the
+convergence checks (R-hat ≤ 1.04, no or negligible divergent transitions; RQ4 uses closed-form
+posteriors and needs no MCMC). `learn_bayes/learn_bayes.qmd`
+explains each model step by step.
+
+# RQ1: How do the leagues differ today?
+
+```{r}
+#| fig-cap: "Figure 1.1. Box-score differences, regular season 2023/24–2025/26. Mixed models with team-season and opponent-season effects; posterior mean and 95% credible interval, in units of game-to-game standard deviations."
+include_graphics(fig(r1, "fig5_box_differences.png"))
+```
+
+The largest differences, in order:
+
+```{r}
+box |> filter(!metric %in% c("np", "tor")) |> arrange(desc(abs(effect_size))) |> head(8) |>
+  transmute(Metric = label, NBA = signif(nba, 3), EuroLeague = signif(el, 3),
+            `Difference (95% CrI)` = sprintf("%s [%s, %s]", signif(diff, 2), signif(diff_lo, 2), signif(diff_hi, 2)),
+            `P(NBA higher)` = round(p_nba_higher, 3)) |> kable()
+```
+
+```{r}
+#| fig-cap: "Figure 1.2. Shot charts. Hexagon size = frequency, colour = points per shot."
+include_graphics(fig(r1, "fig1_shot_charts_today.png"))
+```
+
+```{r}
+#| fig-cap: "Figure 1.3. Shot share and value by zone (binomial models with team-season effects)."
+include_graphics(fig(r1, "fig3_zone_profile.png"))
+```
+
+```{r}
+zones |> transmute(Zone = zone, League = league,
+                   `Share of FGA` = sprintf("%s [%s, %s]", pct(share), pct(share_lo), pct(share_hi)),
+                   FG = pct(fg), `Points per shot` = num(pps, 2)) |> kable()
+```
+
+```{r}
+#| fig-cap: "Figure 1.4. Where the leagues differ: NBA minus EuroLeague share of shots per 0.5 m cell."
+include_graphics(fig(r1, "fig2_shot_difference_map.png"))
+```
+
+```{r}
+#| fig-cap: "Figure 1.5. Shot distance and accuracy."
+include_graphics(fig(r1, "fig4_distance_profile.png"))
+```
+
+```{r}
+#| fig-cap: "Figure 1.6. Modelled accuracy across the court (binomial model with a 2-D smooth surface per league)."
+include_graphics(fig(r1, "fig6_accuracy_surface.png"))
+```
+
+**Recording caveat.** EuroLeague scorers place layups and dunks about 1.1 m from the hoop on average,
+while NBA tracking places them within 0.5 m. Zone boundaries near the rim, and the higher EuroLeague
+"rim" accuracy, should be read with this in mind. Three-point shots are recorded consistently in
+both leagues.
+
+# RQ2: Trends since 2010/11, and does one league follow the other?
+
+## Replicating the 2019 model
+
+```{r}
+#| fig-cap: "Figure 2.1. The 2019 model re-implemented in Stan, fitted to the authors' own data (PLOS ONE S1 Data), against their published Table 1."
+include_graphics(fig(r2, "rq2_replication_check.png"))
+```
+
+## The 2019 table, updated to 2010/11–2025/26
+
+The level (μ, at 2017/18) and linear trend per season (s) for each league; regular season and playoffs
+combined, as in the original Table 1. Percentages ×100.
+
+```{r}
+tab(r2, "table1_updated_2010_2025.csv") |>
+  filter(metric != "tor") |>
+  transmute(Metric = label, `μ EuroLeague` = num(mu_EL, 2), `μ NBA` = num(mu_NBA, 2),
+            `P(NBA higher)` = num(P_d_mu_gt0, 3), `s EuroLeague` = num(s_EL, 3),
+            `s NBA` = num(s_NBA, 3), `P(NBA trend steeper)` = num(P_d_s_gt0, 3)) |> kable()
+```
+
+## Smooth trends and convergence
+
+```{r}
+#| fig-cap: "Figure 2.2. Season means (points) and Bayesian smooth trends (RW2, 95% CrI), regular season."
+include_graphics(fig(r2, "fig1_trends.png"))
+```
+
+```{r}
+#| fig-cap: "Figure 2.3. Gap between the leagues (NBA − EuroLeague) over time."
+include_graphics(fig(r2, "fig2_convergence.png"))
+```
+
+```{r}
+conv |> filter(!metric %in% c("np", "tor")) |>
+  transmute(Metric = label, `Gap 2010/11` = signif(gap_first, 3), `Gap 2025/26` = signif(gap_last, 3),
+            `P(gap shrank)` = num(p_gap_shrank, 2)) |> arrange(desc(`P(gap shrank)`)) |> kable()
+```
+
+## Lead–lag
+
+```{r}
+#| fig-cap: "Figure 2.4. Shift model: posterior probability that the EuroLeague's trend equals the NBA's shifted by k seasons."
+include_graphics(fig(r2, "fig3_lead_lag.png"))
+```
+
+```{r}
+#| fig-cap: "Figure 2.5. The NBA season whose level matches the EuroLeague in 2025/26."
+include_graphics(fig(r2, "fig4_time_gap.png"))
+```
+
+**How to read this.** These are patterns in time, not proof of copying. With about 25 seasons, smooth
+trends can often be shifted a few seasons either way and still fit, so most rows of Figure 2.4 are
+honestly uncertain. The clearest signals are:
+
+* the three-point share and 2PA (EuroLeague about 1–2 seasons behind, or in sync)
+* shooting percentages (in sync)
+* the volume measures (3PA, assists and points per 100 possessions), where the EuroLeague is where the
+  NBA was 3–5 seasons ago
+
+```{r}
+#| fig-cap: "Figure 2.6. Shot charts over time."
+include_graphics(fig(r2, "fig5_shot_charts_over_time.png"))
+```
+
+# RQ3: How does play change in the playoffs?
+
+Only teams that reached the playoffs are used, and each is compared with **its own** regular season,
+with opponent strength modelled.
+
+```{r}
+#| results: asis
+if (has(r3, "playoff_shifts.csv")) {
+  cat('![Figure 3.1. Playoff minus regular season, standardised.](', fig(r3, "fig1_playoff_shifts.png"), ')\n\n', sep = "")
+  cat('![Figure 3.2. Does the NBA playoff shift point towards EuroLeague levels?](', fig(r3, "fig2_nba_toward_euroleague.png"), ')\n\n', sep = "")
+} else cat("*RQ3 models are still running; this section fills in when they finish.*\n")
+```
+
+```{r}
+if (has(r3, "playoff_shifts.csv")) {
+  tab(r3, "playoff_shifts.csv") |> filter(metric != "np") |>
+    transmute(Metric = label,
+              `NBA shift` = sprintf("%s [%s, %s]", signif(po_shift_nba, 2), signif(nba_lo, 2), signif(nba_hi, 2)),
+              `EuroLeague shift` = sprintf("%s [%s, %s]", signif(po_shift_el, 2), signif(el_lo, 2), signif(el_hi, 2)),
+              `P(NBA shift towards EL)` = num(p_nba_toward_el, 2)) |> kable()
+}
+```
+
+```{r}
+#| results: asis
+if (has(r3, "playoff_zone_shifts.csv"))
+  cat('![Figure 3.3. Shot selection in the playoffs.](', fig(r3, "fig3_playoff_zone_shifts.png"), ')\n', sep = "")
+```
+
+# RQ4: Who embodied each season, and who was ahead of their time?
+
+```{r rq4-setup}
+r4t <- \(f) tab(r4, f)
+ttyp <- r4t("team_typicality.csv"); ttp <- r4t("team_time_position.csv")
+pst <- r4t("player_styles.csv"); xl <- r4t("team_cross_league_time.csv")
+nice_player <- function(x) { el <- grepl(",", x)
+  x[el] <- tools::toTitleCase(tolower(sub("^(.*), (.*)$", "\\2 \\1", x[el]))); x }
+```
+
+Every team-season gets a **style profile** of 14 numbers: pace, shot mix (5 zones), free-throw
+attempts, assists, turnovers, offensive rebounds, blocks, steals, fouls and rotation depth. Every
+rotation player-season gets 13 (shot mix plus per-possession rates), always **compared with players
+of the same position**. Profiles are Bayesian posteriors: small samples are shrunk towards the
+league average (conjugate empirical Bayes; see `learn_bayes`, Section 7).
+
+* **Typical / different:** the distance from a team or player to the league's average style that
+  season, and the posterior probability of being the closest (or the furthest) of all.
+* **Ahead of their time:** the league itself moves through style space over the years, along a
+  *path*. A team's **time position** is the season on that path it is closest to: a 2012/13 team
+  closest to the league of 2016/17 is four seasons ahead. "Gain" says how much closer that season is
+  than the team's own season; small gains are weak evidence. The path stops at 2025/26, so recent
+  teams and players cannot be shown as far ahead.
+
+## Teams
+
+```{r}
+#| fig-cap: "Figure 4.1. The time machine: the season each team-season played like. Above the diagonal = ahead of its time."
+include_graphics(fig(r4, "fig1_time_machine_teams.png"))
+```
+
+```{r}
+#| fig-cap: "Figure 4.2. Distance of every team from its league's average style. Red = most different team of the season, diamonds = most typical."
+include_graphics(fig(r4, "fig2_outlier_teams.png"))
+```
+
+* **The Houston Rockets were the NBA's most different team in seven straight seasons**
+  (2013/14–2019/20): almost no long two-pointers, plenty of corner threes and free throws. Their
+  2012/13 and 2016/17 teams sit about four seasons ahead of the league, which later moved their way.
+  Phoenix and Mike D'Antoni's New York (2010/11) also sit ahead, but with weaker evidence (small gains).
+* **Real Madrid of 2013/14–2017/18 played the EuroLeague's future:** fast, assist-heavy, few
+  turnovers, almost no long two-pointers, many above-the-break threes and a deep rotation. Every one of those seasons sits near the end of the EuroLeague's path.
+* **Behind their time:** the 2022/23 Bulls (DeRozan's mid-range offence) played like an NBA team of
+  about 2017/18, and the 2015/16 Timberwolves like one of 2010/11. Partizan 2022/23 played like a
+  EuroLeague team of about 2012/13.
+
+```{r}
+ttp |> filter(abs(years_ahead) >= 3, gain >= 0.6) |>
+  left_join(r4t("team_names.csv"), by = c("league", "season", "team")) |>
+  arrange(league, desc(years_ahead)) |>
+  transmute(League = league, Season = season_label(season), Team = name,
+            `Played like` = season_label(round(tau)),
+            `90% CrI` = sprintf("%s – %s", season_label(floor(tau_lo)), season_label(floor(tau_hi))),
+            `Seasons ahead` = num(years_ahead, 1), Gain = num(gain, 2)) |> kable()
+```
+
+**Across leagues (shot mix only).** Placing EuroLeague teams on the NBA's path using rim / mid-range
+/ three shares: in 2010/11 the typical EuroLeague team's shot mix matched the NBA of about
+`r season_label(2010 + round(median(xl$tau[xl$league == "EuroLeague" & xl$season == 2010] - 2010)))`,
+and the lead shrank steadily until it disappeared around 2018/19. After that the comparison hits
+the end of the path and is not informative. This fits RQ2: the EuroLeague took a *larger share* of
+its shots from three first, while the NBA took more threes *per possession* (it has more possessions
+and fewer turnovers).
+
+## Players
+
+```{r}
+#| fig-cap: "Figure 4.3. The league in one player: the rotation player closest to the league's average style each season."
+include_graphics(fig(r4, "fig5_league_in_one_player.png"))
+```
+
+**Nikola Kalinić was the EuroLeague's "average player" in
+`r sum(pst |> group_by(league, season) |> slice_max(p_league_in_one, n = 1, with_ties = FALSE) |> pull(player) == "KALINIC, NIKOLA")`
+seasons**: a forward who does a bit of everything, from everywhere. In the NBA the role rotates
+among versatile wings and forwards (Boris Diaw twice).
+
+```{r}
+#| fig-cap: "Figure 4.4. Careers through basketball time: each season of a career placed on the league's path for that position."
+include_graphics(fig(r4, "fig3_career_paths.png"))
+```
+
+```{r}
+#| fig-cap: "Figure 4.5. The Lopez twins: Brook's 2016/17 move to the three-point line, on the court and in time."
+include_graphics(fig(r4, "fig4_lopez_twins.png"))
+```
+
+* **Brook Lopez** is the clearest single case. He went from a 2010s centre (14 threes in 2015/16)
+  to the centre of today (387 threes in 2016/17) in one summer; his twin **Robin** stayed a 2010s
+  centre, apart from one season next to Brook in Milwaukee. **Al Horford** (from 2015/16) and
+  **Nikola Jokić** were also ahead among centres, and **Matt Bonner** (a three-point-shooting centre
+  in 2010/11) was far ahead of his time.
+* EuroLeague guards such as **Juan Carlos Navarro**, **Miloš Teodosić**, **Sergio Llull** and
+  **Vassilis Spanoulis** sit above the diagonal for most of their careers: the deep pull-up three
+  arrived in the EuroLeague with them. **Walter Tavares** and **Tornike Shengelia** play an inside
+  game and sit below it.
+* Among players, many time positions land on the first or last season of the path: one player
+  differs from his position's average far more than the league changes in 15 years. Read player
+  results as **ahead / on time / behind** rather than as exact numbers of years.
+
+```{r}
+pst |> filter(season <= 2020, years_ahead >= 3, gain >= 0.9) |>
+  group_by(league) |> slice_max(gain, n = 8, with_ties = FALSE) |> ungroup() |>
+  transmute(League = league, Season = season_label(season), Player = nice_player(player),
+            Position = position, `Played like` = season_label(round(tau)),
+            Gain = num(gain, 2), `Stands out for` = stands_out_for) |> kable()
+```
+
+```{r}
+#| fig-cap: "Figure 4.6. Unicorns: style fingerprints of the most unusual players, against the average player of the same position and season."
+include_graphics(fig(r4, "fig6_unicorns.png"))
+```
+
+# Limitations
+
+* Box scores and shot locations come from two different scorekeeping systems. Shots near the rim are
+  recorded less precisely in the EuroLeague, and rebounds and turnovers are credited slightly differently.
+* The EuroLeague's format changed several times (Top 16 until 2015/16, round robin since 2016/17,
+  play-in since 2025/26), and the 2019/20 season was cancelled after the regular season.
+* Lead–lag results describe timing only. Shared causes (analytics, rule changes, player migration)
+  could produce the same pattern.
+* RQ4 depends on which features define "style". A different list could name different teams
+  or players; the posterior probabilities show where the choice is close.
+* NBA possessions per 40 minutes before 2010/11 use regulation length (no overtime correction); this
+  only affects the lead–lag model.

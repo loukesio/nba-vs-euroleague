@@ -1,0 +1,323 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package ‘dplyr’ was built under R version 4.5.2 
+Warning messages:
+1: package ‘Rcpp’ was built under R version 4.5.2 
+2: package ‘posterior’ was built under R version 4.5.3 
+Warning messages:
+1: package ‘tidyr’ was built under R version 4.5.2 
+2: package ‘purrr’ was built under R version 4.5.2 
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 230.1 seconds.
+Chain 3 finished in 237.4 seconds.
+Chain 1 finished in 240.3 seconds.
+Chain 2 finished in 263.5 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 242.8 seconds.
+Total execution time: 264.0 seconds.
+
+Loading required namespace: rstan
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 2 finished in 327.3 seconds.
+Chain 4 finished in 354.1 seconds.
+Chain 1 finished in 373.1 seconds.
+Chain 3 finished in 374.8 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 357.3 seconds.
+Total execution time: 375.4 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 279.5 seconds.
+Chain 2 finished in 285.3 seconds.
+Chain 4 finished in 286.0 seconds.
+Chain 1 finished in 305.3 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 289.0 seconds.
+Total execution time: 305.7 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 235.2 seconds.
+Chain 1 finished in 239.6 seconds.
+Chain 2 finished in 246.6 seconds.
+Chain 4 finished in 248.1 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 242.4 seconds.
+Total execution time: 251.6 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 339.5 seconds.
+Chain 1 finished in 363.9 seconds.
+Chain 2 finished in 366.5 seconds.
+Chain 4 finished in 366.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 359.1 seconds.
+Total execution time: 366.9 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 338.2 seconds.
+Chain 3 finished in 343.3 seconds.
+Chain 2 finished in 360.5 seconds.
+Chain 4 finished in 382.9 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 356.2 seconds.
+Total execution time: 383.9 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 253.6 seconds.
+Chain 1 finished in 268.1 seconds.
+Chain 4 finished in 275.4 seconds.
+Chain 2 finished in 282.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 269.8 seconds.
+Total execution time: 282.4 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 281.1 seconds.
+Chain 1 finished in 286.3 seconds.
+Chain 3 finished in 288.1 seconds.
+Chain 2 finished in 294.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 287.5 seconds.
+Total execution time: 294.8 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 169.8 seconds.
+Chain 2 finished in 173.6 seconds.
+Chain 1 finished in 174.7 seconds.
+Chain 4 finished in 180.7 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 174.7 seconds.
+Total execution time: 181.5 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 224.7 seconds.
+Chain 3 finished in 231.8 seconds.
+Chain 2 finished in 277.1 seconds.
+Chain 4 finished in 285.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 254.6 seconds.
+Total execution time: 285.6 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 285.6 seconds.
+Chain 4 finished in 287.5 seconds.
+Chain 2 finished in 289.7 seconds.
+Chain 1 finished in 293.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 289.0 seconds.
+Total execution time: 293.5 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 261.4 seconds.
+Chain 4 finished in 275.6 seconds.
+Chain 2 finished in 277.7 seconds.
+Chain 1 finished in 314.3 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 282.2 seconds.
+Total execution time: 314.7 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 296.1 seconds.
+Chain 4 finished in 308.3 seconds.
+Chain 3 finished in 326.8 seconds.
+Chain 2 finished in 336.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 316.9 seconds.
+Total execution time: 337.1 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 189.0 seconds.
+Chain 3 finished in 190.7 seconds.
+Chain 4 finished in 194.3 seconds.
+Chain 2 finished in 200.6 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 193.7 seconds.
+Total execution time: 201.2 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 217.7 seconds.
+Chain 2 finished in 222.3 seconds.
+Chain 1 finished in 228.0 seconds.
+Chain 4 finished in 230.1 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 224.5 seconds.
+Total execution time: 230.6 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 272.5 seconds.
+Chain 4 finished in 327.4 seconds.
+Chain 1 finished in 340.0 seconds.
+Chain 2 finished in 342.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 320.6 seconds.
+Total execution time: 343.1 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 210.4 seconds.
+Chain 3 finished in 216.8 seconds.
+Chain 4 finished in 234.2 seconds.
+Chain 2 finished in 243.7 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 226.3 seconds.
+Total execution time: 244.2 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 149.0 seconds.
+Chain 1 finished in 150.0 seconds.
+Chain 4 finished in 154.4 seconds.
+Chain 2 finished in 158.7 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 153.0 seconds.
+Total execution time: 159.1 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 147.9 seconds.
+Chain 1 finished in 156.0 seconds.
+Chain 4 finished in 158.0 seconds.
+Chain 2 finished in 160.1 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 155.5 seconds.
+Total execution time: 160.5 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 137.0 seconds.
+Chain 1 finished in 138.1 seconds.
+Chain 2 finished in 147.0 seconds.
+Chain 4 finished in 148.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 142.6 seconds.
+Total execution time: 149.0 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 2 finished in 113.1 seconds.
+Chain 3 finished in 116.4 seconds.
+Chain 1 finished in 119.3 seconds.
+Chain 4 finished in 119.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 117.0 seconds.
+Total execution time: 119.6 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 121.5 seconds.
+Chain 3 finished in 124.8 seconds.
+Chain 4 finished in 131.2 seconds.
+Chain 2 finished in 137.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 128.7 seconds.
+Total execution time: 137.6 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 2 finished in 138.9 seconds.
+Chain 1 finished in 139.5 seconds.
+Chain 3 finished in 144.0 seconds.
+Chain 4 finished in 157.5 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 145.0 seconds.
+Total execution time: 158.0 seconds.
+
+# A tibble: 23 × 8
+   label       nba     el     diff p_nba_higher effect_size max_rhat divergences
+   <chr>     <dbl>  <dbl>    <dbl>        <dbl>       <dbl>    <dbl>       <dbl>
+ 1 Posses… 114.    84.3    2.93e+1            1     5.02        1.02           0
+ 2 Posses…  94.2   83.8    1.04e+1            1     2.23        1.01           0
+ 3 Minute…   3.23   3.28  -4.61e-2            0    -0.342       1.02           0
+ 4 Points… 101.    99.8    1.16e+0            1     0.105       1.02           0
+ 5 Effect…   0.546  0.550 -4.16e-3            0    -0.0607      1.01           0
+ 6 Turnov…   0.118  0.139 -2.14e-2            0    -0.618       1.01           0
+ 7 Free-t…   0.198  0.234 -3.62e-2            0    -0.462       1.01           0
+ 8 Offens…   0.250  0.292 -4.20e-2            0    -0.538       1.01           0
+ 9 Defens…   0.750  0.708  4.18e-2            1     0.535       1.02           0
+10 3PA sh…   0.411  0.411 -8.96e-5            0    -0.00143     1.03           0
+11 2P%       0.548  0.555 -7.09e-3            0    -0.0935      1.01           0
+12 3P%       0.361  0.361 -1.63e-4            0    -0.00184     1.01           0
+13 FT%       0.782  0.782  2.39e-4            1     0.00235     1.01           0
+14 FTA pe…  19.6   22.1   -2.52e+0            0    -0.407       1.01           0
+15 2PA pe…  46.2   44.3    1.96e+0            1     0.356       1.01           0
+16 3PA pe…  32.2   30.7    1.49e+0            1     0.295       1.01           0
+17 Assist…  23.5   21.8    1.70e+0            1     0.373       1.01           0
+18 Blocks…   4.36   2.93   1.44e+0            1     0.715       1.01           0
+19 Steals…   7.06   7.66  -6.01e-1            0    -0.221       1.01           0
+20 Turnov…  11.8   13.9   -2.12e+0            0    -0.612       1.01           0
+21 Fouls …  16.8   24.3   -7.48e+0            0    -2.14        1.01           0
+22 FTA pe…   1.16   0.899  2.61e-1            1     1.20        1.01           0
+23 Reboun…  38.5   36.4    2.17e+0            1     0.428       1.01           0
+Rscript RQ1_differences_today/scripts/01_box_differences.R  10881.45s user 283.17s system 179% cpu 1:43:42.34 total

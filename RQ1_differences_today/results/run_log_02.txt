@@ -1,0 +1,151 @@
+Warning message:
+package ‘ggplot2’ was built under R version 4.5.2 
+Warning messages:
+1: package ‘Rcpp’ was built under R version 4.5.2 
+2: package ‘posterior’ was built under R version 4.5.3 
+3: package ‘dplyr’ was built under R version 4.5.2 
+Warning messages:
+1: package ‘tidyr’ was built under R version 4.5.2 
+2: package ‘purrr’ was built under R version 4.5.2 
+Start sampling
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 22.1 seconds.
+Chain 2 finished in 29.4 seconds.
+Chain 3 finished in 29.7 seconds.
+Chain 4 finished in 29.8 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 27.7 seconds.
+Total execution time: 30.4 seconds.
+
+Loading required namespace: rstan
+Start sampling
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 18.8 seconds.
+Chain 3 finished in 18.3 seconds.
+Chain 4 finished in 18.2 seconds.
+Chain 2 finished in 19.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 18.7 seconds.
+Total execution time: 19.8 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 22.1 seconds.
+Chain 1 finished in 23.8 seconds.
+Chain 3 finished in 25.6 seconds.
+Chain 2 finished in 25.9 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 24.3 seconds.
+Total execution time: 26.2 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 3 finished in 20.3 seconds.
+Chain 4 finished in 20.2 seconds.
+Chain 1 finished in 20.9 seconds.
+Chain 2 finished in 21.3 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 20.7 seconds.
+Total execution time: 21.6 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 20.5 seconds.
+Chain 4 finished in 20.3 seconds.
+Chain 2 finished in 20.7 seconds.
+Chain 3 finished in 20.7 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 20.5 seconds.
+Total execution time: 21.1 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 14.6 seconds.
+Chain 2 finished in 14.6 seconds.
+Chain 3 finished in 14.6 seconds.
+Chain 4 finished in 15.1 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 14.7 seconds.
+Total execution time: 15.5 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 20.3 seconds.
+Chain 3 finished in 21.9 seconds.
+Chain 2 finished in 22.6 seconds.
+Chain 1 finished in 23.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 22.0 seconds.
+Total execution time: 23.5 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 4 finished in 16.2 seconds.
+Chain 1 finished in 16.6 seconds.
+Chain 2 finished in 16.8 seconds.
+Chain 3 finished in 17.0 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 16.7 seconds.
+Total execution time: 17.3 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 2 finished in 17.7 seconds.
+Chain 1 finished in 18.2 seconds.
+Chain 3 finished in 19.5 seconds.
+Chain 4 finished in 19.5 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 18.7 seconds.
+Total execution time: 20.0 seconds.
+
+Start sampling
+Running MCMC with 4 parallel chains...
+
+Chain 1 finished in 11.6 seconds.
+Chain 4 finished in 12.5 seconds.
+Chain 2 finished in 12.7 seconds.
+Chain 3 finished in 13.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 12.5 seconds.
+Total execution time: 13.4 seconds.
+
+# A tibble: 10 × 7
+   zone            league      share    fg   pps p_nba_share_higher max_rhat
+   <chr>           <chr>       <dbl> <dbl> <dbl>              <dbl>    <dbl>
+ 1 Rim area        NBA        0.346  0.628 1.26               1         1.00
+ 2 Rim area        EuroLeague 0.298  0.685 1.37               1         1.00
+ 3 Short mid-range NBA        0.163  0.438 0.877              0         1.01
+ 4 Short mid-range EuroLeague 0.215  0.424 0.847              0         1.01
+ 5 Long mid-range  NBA        0.0755 0.413 0.825              0.857     1.01
+ 6 Long mid-range  EuroLeague 0.0717 0.397 0.793              0.857     1.01
+ 7 Corner 3        NBA        0.106  0.388 1.16               1         1.00
+ 8 Corner 3        EuroLeague 0.0447 0.425 1.28               1         1.00
+ 9 Above-break 3   NBA        0.303  0.353 1.06               0         1.01
+10 Above-break 3   EuroLeague 0.363  0.354 1.06               0         1.01
+             zone max_rhat divergences
+1        Rim area 1.004462           0
+3 Short mid-range 1.006384           0
+5  Long mid-range 1.010775           0
+7        Corner 3 1.001773           0
+9   Above-break 3 1.009651           0

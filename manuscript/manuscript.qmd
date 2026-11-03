@@ -344,11 +344,13 @@ threes. Teams behind their time include the 2022/23 Chicago Bulls, whose mid-ran
 resembled an NBA team of about 2017/18, and Partizan 2022/23.
 
 ```{r fig-timemachine}
+#| out-width: "86%"
 #| fig-cap: "The time machine. Each team-season's 14-number style profile (shrinkage posterior, 400 draws, each feature scaled by the pooled within-season spread between teams) is compared with its league's average profile in every season (the league's path); its time position is the season it is closest to (Euclidean distance), computed draw by draw. Dots: median time position; bars: 90% interval; dot size: how much closer that season is than the team's own season. Above the diagonal = ahead of its time."
 include_graphics(fig(r4, "fig1_time_machine_teams.png"))
 ```
 
 ```{r fig-outliers}
+#| out-width: "86%"
 #| fig-cap: "Typical and different teams. For each team-season and posterior draw, the Euclidean distance between its scaled style profile and the league-season average; dots are the posterior mean distance. Red marks the team that is furthest away in most draws (the most different team of the season); lines join teams that were the most different in three or more seasons."
 include_graphics(fig(r4, "fig2_outlier_teams.png"))
 ```
@@ -360,24 +362,69 @@ Robin stayed a 2010s centre (@fig-lopez). EuroLeague guards such as Juan Carlos 
 Teodosić, Sergio Llull and Vassilis Spanoulis sit ahead of their time for most of their careers.
 
 ```{r fig-lopez}
-#| fig-cap: "Brook and Robin Lopez. Left: every regular-season shot in 2015/16 and 2016/17 (red = three-point attempts). Right: each season's time position among NBA centres, computed as for teams but with the 13-number player profile compared with the average centre of every season (median and 90% interval)."
+#| out-width: "86%"
+#| fig-cap: "Brook and Robin Lopez. Top: every regular-season shot in 2015/16 and 2016/17 (red = three-point attempts). Bottom: each season's time position among NBA centres, computed as for teams but with the 13-number player profile compared with the average centre of every season (median and 90% interval)."
 include_graphics(fig(r4, "fig4_lopez_twins.png"))
 ```
 
 # Discussion
 
+## Overview of the results
+
+* **RQ1, the leagues today (2023/24–2025/26).** The NBA and the EuroLeague now shoot equally well and
+  take the same share of their shots from three (41.1%). They differ in style: the NBA plays about
+  ten more possessions per 40 minutes, blocks more and earns more free throws per foul; the
+  EuroLeague commits about seven more fouls per 100 possessions, turns the ball over more and
+  rebounds more of its own misses. The same three-point share comes from different spots: 11% of NBA
+  shots are corner threes against 4% in the EuroLeague, where the rare corner three is worth more
+  (1.28 against 1.16 points per shot).
+* **RQ2, change since 2010/11.** The 2019 model was reproduced exactly (68 of 68 estimates, largest
+  difference 0.013). Since 2010/11 the leagues converged in shot mix and shooting (the NBA closed an
+  11-point gap in three-point share) but drifted apart in pace, free throws and rebounding. On
+  three-point shooting the EuroLeague moves with the NBA or a season behind; on volume measures it
+  looks like the NBA of three to five seasons ago; for most other metrics no league clearly leads.
+* **RQ3, the playoffs.** In both leagues playoff games are slower, more physical and lower in
+  shooting accuracy. The NBA's playoffs move towards the EuroLeague's numbers on 11 of 22 metrics
+  (tempo, fouls, free throws) but away from them on 8, including every field-goal percentage.
+* **RQ4, ahead of their time.** Houston was the NBA's most different team for seven straight seasons
+  (2013/14–2019/20), and its 2012/13 and 2016/17 teams played about four seasons ahead of the league;
+  Real Madrid of 2013/14–2017/18 played the style the EuroLeague later adopted; Chicago and Partizan in 2022/23
+  played an older one. Among players, Brook Lopez jumped about a decade in one season, and EuroLeague
+  guards such as Navarro, Teodosić and Spanoulis were ahead of their time for most of their careers.
+
+## What is new in this study
+
+Earlier comparisons of the two leagues have been cross-sectional or descriptive. @paulauskas2018
+compared European players at one tournament (EuroBasket 2015) with discriminant analysis.
+@mandic2019 used league-season box scores from 2000/01 to 2016/17 with a straight-line trend per
+league and metric. Long-run NBA studies such as @zajac2023 describe four decades of shooting in a
+single league, and @erculj2015 compared shot types across levels of competition. This study adds
+six things that none of them did:
+
+1. **A replication before the update.** We re-implemented the 2019 model and reproduced all 68
+   published estimates from the authors' own data, so the update starts from a verified baseline.
+2. **Where shots are taken and made.** 4.1 million located attempts, compared zone by zone and across
+   the whole court with each league's own court geometry, instead of box-score totals alone.
+3. **Team and opponent adjustment.** League differences are estimated at game level with team-season
+   and opponent-season effects, so they are not driven by a few extreme teams or schedules.
+4. **Trends that can bend, with uncertainty.** Second-order random walks replace straight lines, and
+   every gap and convergence statement comes with a posterior probability.
+5. **An explicit test of who follows whom.** The shift model and the time-gap calculation turn the
+   question into one the data can answer, or openly fail to answer.
+6. **Teams and players placed in time.** Shrinkage style profiles give every team and rotation player
+   a time position with a credible interval, so cases such as Houston, Real Madrid or Brook Lopez are
+   measured rather than told as anecdotes.
+
+All code, Stan models, tables and figures are open, and the figures are drawn with a documented R
+package [@ggbasket], so the analysis can be rerun as new seasons are played.
+
 ## The leagues are converging in skill, not in style
 
-Sixteen seasons after the period studied by @mandic2019, the two leagues shoot equally well: the
-three-point share, three-point percentage, free-throw percentage and effective field-goal percentage
-are now practically the same (Figure 1). The convergence the 2019 paper saw has continued for
-shooting; the NBA closed an 11-point gap in three-point share by about 2019/20 (Figure 7). But
-convergence in shooting has not brought convergence in style. Pace diverged: the NBA now plays about
-ten more possessions per 40 minutes, a gap that widened until about 2020/21 and has narrowed only
-slightly since. The EuroLeague still commits about seven more fouls per 100 possessions, earns fewer
-free throws per foul, turns the ball over more and rebounds more of its own misses. Even the equal
-three-point share is reached from different places: the NBA shoots from the corners, the
-EuroLeague above the break and from the short mid-range (Figures 2–3).
+Sixteen seasons after the period studied by @mandic2019, the convergence they saw has continued for
+shooting, and the NBA closed its three-point-share gap by about 2019/20 (Figure 7). But convergence
+in shooting has not brought convergence in style. The pace gap widened until about 2020/21 and has
+narrowed only slightly since, and the foul, free-throw and rebounding gaps have grown. Even the equal
+three-point share is reached from different places (Figures 2–3).
 
 ## Why the leagues differ
 
@@ -406,34 +453,6 @@ the NBA was becoming "more European": the EuroLeague took a larger share of its 
 first, but the NBA now takes more threes per possession, because it has more possessions and fewer
 turnovers. In the playoffs the NBA does move towards the EuroLeague in tempo, fouls and free throws,
 but not in field-goal shooting, so the 2019 claim holds only in part.
-
-## How this study differs from earlier work
-
-Earlier comparisons of the two leagues have been cross-sectional or descriptive. @paulauskas2018
-compared players at one tournament (EuroBasket 2015) with discriminant analysis. @mandic2019 used
-league-season box scores from 2000/01 to 2016/17 with a linear trend per league and metric.
-Long-run NBA studies such as @zajac2023 describe four decades of shooting in a single league, and
-@erculj2015 compared shot types across levels of competition. This study differs in six ways:
-
-1. **Replication first.** Before extending the 2019 study we re-implemented its model and reproduced
-   all 68 published estimates from the authors' own data, so the update starts from a verified
-   baseline rather than from a new method with new assumptions.
-2. **Shot locations.** We add 4.1 million located attempts and compare where shots are taken and how
-   accurate they are across the court, using each league's own court geometry, instead of box-score
-   totals alone.
-3. **Team and opponent adjustment.** League differences are estimated at game level with team-season
-   and opponent-season effects, so they are not driven by a few extreme teams or schedules.
-4. **Flexible trends with uncertainty.** Second-order random walks let trends bend, and every gap,
-   convergence statement and lead–lag result comes with a posterior probability instead of a straight
-   line and a point estimate.
-5. **Explicit timing models.** The shift model and the time-gap calculation turn "who follows whom"
-   into a question the data can answer, or can openly fail to answer.
-6. **Teams and players in time.** Shrinkage style profiles place every team and rotation player on its
-   league's path, so cases such as Houston, Real Madrid or Brook Lopez come with credible intervals
-   rather than as anecdotes.
-
-All code, Stan models, tables and figures are open, and the figures are drawn with a documented R
-package [@ggbasket], so the analysis can be rerun as new seasons are played.
 
 ## Practical implications
 

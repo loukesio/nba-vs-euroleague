@@ -76,7 +76,7 @@ f1 <- ggplot(tp, aes(season, tau)) +
                   min.segment.length = 0, segment.colour = "grey40", segment.size = 0.3,
                   box.padding = 0.5, max.overlaps = Inf) +
   season_axis +
-  facet_wrap(~ league) +
+  facet_wrap(~ league, ncol = 1) +
   scale_colour_manual(values = LEAGUE_COLOURS, guide = "none") +
   scale_fill_manual(values = LEAGUE_COLOURS, guide = "none") +
   scale_size_continuous(range = c(0.6, 4), name = "How much closer to\nthat season's league") +
@@ -90,7 +90,7 @@ f1 <- ggplot(tp, aes(season, tau)) +
   theme_project() +
   theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.spacing = unit(1.2, "lines"),
         strip.text = element_text(size = 12))
-ggsave(fig("fig1_time_machine_teams.png"), f1, width = 11, height = 6.2, dpi = 300)
+ggsave(fig("fig1_time_machine_teams.png"), f1, width = 7.5, height = 10, dpi = 300)
 
 # ---- Fig 2: who stood out each season ----------------------------------------------------------
 most_diff <- tp |> group_by(league, season) |> slice_max(p_most_different, n = 1, with_ties = FALSE) |>
@@ -120,7 +120,7 @@ f2 <- ggplot(tp, aes(season, distance)) +
   theme_project() +
   theme(plot.subtitle = ggtext::element_markdown(), panel.grid.major.x = element_blank(),
         strip.text = element_text(size = 12))
-ggsave(fig("fig2_outlier_teams.png"), f2, width = 11, height = 7.5, dpi = 300)
+ggsave(fig("fig2_outlier_teams.png"), f2, width = 7.5, height = 9, dpi = 300)
 
 # ---- Fig 3: careers through basketball time ------------------------------------------------------
 CAREERS <- tribble(
@@ -205,14 +205,14 @@ f4b <- ggplot(twin_path, aes(season, tau, colour = name)) +
   labs(x = "Season played", y = "Season he played like (centres)") +
   theme_project() + theme(panel.grid.major = element_blank(), legend.position = "top")
 
-f4 <- (f4a | f4b) + plot_layout(widths = c(1.25, 1)) +
+f4 <- (f4a / f4b) + plot_layout(heights = c(1.15, 1)) +
   plot_annotation(
     title = "Same genes, different eras: Brook Lopez jumped a decade in one summer",
     subtitle = paste("In 2016/17 Brook Lopez moved out to the three-point line and jumped from the 2010s",
                      "centre to the centre of today. Robin stayed near the rim for most of his career."),
-    caption = "Regular-season shots. Right: time position among NBA centres (90% credible intervals).",
+    caption = "Regular-season shots. Bottom: time position among NBA centres (90% credible intervals).",
     theme = theme_project())
-ggsave(fig("fig4_lopez_twins.png"), f4, width = 12, height = 6.4, dpi = 300)
+ggsave(fig("fig4_lopez_twins.png"), f4, width = 7.5, height = 10, dpi = 300)
 
 # ---- Fig 5: the league in one player ---------------------------------------------------------------
 l1 <- pl |> group_by(league, season) |> slice_max(p_league_in_one, n = 1, with_ties = FALSE) |> ungroup() |>

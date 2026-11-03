@@ -89,7 +89,11 @@ The NBA and the EuroLeague are the two strongest basketball competitions in the 
 are played under different rules (a 48- against a 40-minute game, a 7.24 m against a 6.75 m
 three-point line, different defensive and foul rules) and by teams built in different ways. How
 the two leagues differ, and whether they are becoming alike, matters to coaches and scouts who move
-players between them and to analysts who compare their statistics.
+players between them and to analysts who compare their statistics. A large literature identifies the
+game-related statistics that separate winning from losing teams [@ibanez2008; @csataljay2009], and
+shot-location and player-tracking data now allow spatial and possession-level models of shooting and
+defence [@franks2015; @sampaio2015; @cervone2016]; @zuccolotto2020 review the statistical toolkit for
+basketball data. Most of this work, however, studies one league at a time.
 
 @mandic2019 compared the leagues from 2000/01 to 2016/17 with a Bayesian model of season means and
 linear trends. They found that the NBA was moving towards the EuroLeague's style, most clearly in
@@ -141,9 +145,9 @@ the 2025/26 play-in is dropped.
 
 # Methods
 
-All models are Bayesian and fitted in Stan [@carpenter2017], directly or through brms
-[@burkner2017]. Every reported model passed the usual checks (R-hat ≤ 1.04, no or negligible
-divergent transitions). Figures were drawn with the ggbasket package [@ggbasket].
+All models are Bayesian [@gelman2013] and fitted in Stan [@carpenter2017], directly or through brms
+[@burkner2017]. Every reported model passed the usual checks: rank-normalised R-hat ≤ 1.04
+[@vehtari2021] and no or negligible divergent transitions. Figures were drawn with the ggbasket package [@ggbasket], which builds on ggplot2 [@wickham2016].
 
 **Replication (RQ2).** The 2019 model describes each league and metric by game-level values
 $y_{ij} \sim N(\mu_j, \sigma_j)$ in season $j$, with season means on a line,
@@ -185,7 +189,7 @@ EuroLeague's regular-season level.
 free throws, assists, turnovers, offensive rebounds, blocks, steals, fouls and rotation depth) and
 each rotation player-season by 13, always compared with players of the same position. Profiles are
 conjugate posteriors (Dirichlet–multinomial for shot mix, gamma–Poisson for rates, normal for game
-means) with prior strength estimated by marginal likelihood (empirical Bayes), so small samples
+means) with prior strength estimated by marginal likelihood (empirical Bayes; @efron1975), so small samples
 are shrunk towards the league–season average. A team's *time position* is the season on its
 league's path through style space that it is closest to; a team of 2012/13 closest to the league
 of 2016/17 is four seasons ahead. All features are put on one scale, the pooled
@@ -403,6 +407,9 @@ six things that none of them did:
 
 1. **A replication before the update.** We re-implemented the 2019 model and reproduced all 68
    published estimates from the authors' own data, so the update starts from a verified baseline.
+   Large replication projects in other fields have shown how often published results fail to hold
+   up [@osc2015]; in sports analytics, re-analyses of published models on the original data remain
+   uncommon.
 2. **Where shots are taken and made.** 4.1 million located attempts, compared zone by zone and across
    the whole court with each league's own court geometry, instead of box-score totals alone.
 3. **Team and opponent adjustment.** League differences are estimated at game level with team-season
@@ -466,7 +473,9 @@ differently) must be handled before the two leagues' shot or play-by-play data a
 ## Future work
 
 Three extensions follow. Play-by-play data would allow possession-level comparisons of shot-clock use,
-transition play, home advantage and line-ups. A joint model of both leagues with shared trend
+transition play, home advantage and line-ups, and of shooting under pressure, which @zuccolotto2018
+modelled for Italian and Olympic basketball; player-tracking data would add movement and defensive
+spacing [@sampaio2015; @franks2015]. A joint model of both leagues with shared trend
 components would test convergence directly. And models that follow the same players across both
 leagues would separate the effect of the league from the effect of who plays in it.
 

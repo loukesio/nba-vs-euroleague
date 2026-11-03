@@ -29,3 +29,4 @@ manuscript/*.typ
 ggbasket.gif
 manuscript/*.log
 manuscript/*.tex
+!manuscript/manuscript.docx

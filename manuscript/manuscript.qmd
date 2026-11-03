@@ -188,7 +188,23 @@ conjugate posteriors (Dirichlet–multinomial for shot mix, gamma–Poisson for 
 means) with prior strength estimated by marginal likelihood (empirical Bayes), so small samples
 are shrunk towards the league–season average. A team's *time position* is the season on its
 league's path through style space that it is closest to; a team of 2012/13 closest to the league
-of 2016/17 is four seasons ahead.
+of 2016/17 is four seasons ahead. All features are put on one scale, the pooled
+within-season spread between teams (or players) of the same league, so that a difference of 1 means
+"as different as a typical pair of teams in the same season". Distances are Euclidean on that scale
+and are computed for each of 400 posterior draws, which gives the credible intervals in Figures 12–14.
+
+**From models to figures.** Every figure is drawn from saved posterior summaries:
+
+* Figure 1 shows the league effects of the RQ1 box-score models; Figures 2–4 show the raw shot
+  locations (Figure 2), the zone models (Figure 3) and the spatial accuracy model (Figure 4).
+* Figure 5 compares the replicated 2019 model with the published Table 1.
+* Figures 6–7 show the RW2 trends and the draw-by-draw difference between them; Figures 8–9 show the
+  shift model and the time-gap calculation.
+* Figures 10–11 show the matched playoff models and the "towards the EuroLeague" ratio.
+* Figures 12–14 show the style-profile distances and time positions.
+
+Each caption repeats what is plotted and how it was computed, and the code for every figure is in
+the `scripts/` folder of each research question in the repository.
 
 # Results
 
@@ -205,7 +221,7 @@ fouls far more (`r num(b("fcm_100","el"))` against `r num(b("fcm_100","nba"))` p
 turns the ball over more and rebounds more of its own misses.
 
 ```{r fig-box}
-#| fig-cap: "Box-score differences between the leagues, regular season 2023/24–2025/26. Posterior means and 95% credible intervals from mixed models with team- and opponent-season effects, in game-to-game standard deviations; numbers are the leagues' values on the original scale."
+#| fig-cap: "Box-score differences between the leagues, regular season 2023/24–2025/26. For each metric a Bayesian mixed model was fitted to every team-game (metric standardised; league effect plus team-season and opponent-season random effects; league-specific residual SD). Dots are the posterior mean of the league difference (NBA − EuroLeague) divided by the game-to-game SD, bars its 95% credible interval; the numbers are each league's model-based mean on the original scale."
 #| out-width: "92%"
 include_graphics(fig(r1, "fig5_box_differences.png"))
 ```
@@ -223,19 +239,19 @@ the league's own line, and beyond 2.5 m accuracy is the same; EuroLeague accurac
 on the mid-range wings and far beyond the arc (@fig-surface).
 
 ```{r fig-shots}
-#| fig-cap: "Shot charts, regular season 2023/24–2025/26. Hexagon size = how often shots are taken from there; colour = points per shot."
+#| fig-cap: "Shot charts, regular season 2023/24–2025/26. All located field-goal attempts of each league are binned into hexagons (30 across the court width, about 0.5 m). Hexagon area is proportional to the share of the league's attempts taken there (capped at the 98th percentile so the rim does not dominate); colour is the observed points per attempt in the hexagon (2 or 3 × made). Hexagons with fewer than 15 attempts are not drawn."
 #| out-width: "92%"
 include_graphics(fig(r1, "fig1_shot_charts_today.png"))
 ```
 
 ```{r fig-zones}
-#| fig-cap: "Shot share and value by zone for a typical team. Posterior means and 95% credible intervals from binomial models with team-season effects."
+#| fig-cap: "Shot share and value by zone for a typical team, regular season 2023/24–2025/26. Each attempt is assigned to one of five zones (Section 2). Left: share of attempts per zone from a binomial model (attempts in the zone out of all attempts; league effect plus team-season random effect). Right: points per shot = modelled make probability in the zone (binomial model of makes out of attempts, same structure) × the zone's shot value. Dots are posterior means at the average team-season, bars 95% credible intervals."
 #| out-width: "92%"
 include_graphics(fig(r1, "fig3_zone_profile.png"))
 ```
 
 ```{r fig-surface}
-#| fig-cap: "Modelled accuracy across the court: binomial model with a smooth two-dimensional surface per league (posterior mean)."
+#| fig-cap: "Modelled accuracy across the court, regular season 2023/24–2025/26. Shots are aggregated into 0.5 m × 0.5 m cells (left and right sides pooled), and a binomial model of makes out of attempts with a separate smooth two-dimensional tensor-product surface per league is fitted; the map shows the posterior mean make probability in each cell, mirrored back to both sides."
 #| out-width: "92%"
 include_graphics(fig(r1, "fig6_accuracy_surface.png"))
 ```
@@ -247,7 +263,7 @@ include_graphics(fig(r1, "fig6_accuracy_surface.png"))
 `r num(max(abs(rep$mean - rep$published)), 3)` (@fig-replication).
 
 ```{r fig-replication}
-#| fig-cap: "The 2019 model re-implemented in Stan and fitted to the authors' published data, against their Table 1."
+#| fig-cap: "Replication of Mandić et al. (2019). Each point is one of the 68 published estimates (17 metrics × 2 leagues; level μ in the left panel, trend s in the right). The x-axis is the published value (their Table 1); the y-axis is our posterior mean from the same model fitted in Stan to the authors' S1 data, with ± 2 posterior SD. Points on the dashed line are identical."
 #| out-width: "75%"
 include_graphics(fig(r2, "rq2_replication_check.png"))
 ```
@@ -261,12 +277,14 @@ possessions per 40 minutes (probability that it shrank `r num(cv("pace40","p_gap
 Free-throw rate and offensive rebounding also drifted apart (@fig-convergence).
 
 ```{r fig-trends}
-#| fig-cap: "Season means (points) and Bayesian smooth trends (RW2, 95% credible bands), regular season 2010/11–2025/26. Grey vertical lines mark rule changes."
+#| out-width: "86%"
+#| fig-cap: "Trends, regular season 2010/11–2025/26. Points are the observed season means of team-game values. Lines and bands are the posterior mean and 95% credible band of a second-order random-walk (RW2) trend fitted separately to each league and metric, using the season means and their standard errors (Section 3). Grey vertical lines mark rule changes."
 include_graphics(fig(r2, "fig1_trends.png"))
 ```
 
 ```{r fig-convergence}
-#| fig-cap: "Gap between the leagues (NBA minus EuroLeague) over time, 95% credible bands. A line moving towards zero means the leagues are converging."
+#| out-width: "86%"
+#| fig-cap: "Gap between the leagues over time. For every posterior draw, the EuroLeague trend of Figure 6 is subtracted from the NBA trend season by season; lines and bands are the posterior mean and 95% credible band of that difference. The colour is the posterior probability that the absolute gap in 2025/26 is smaller than in 2010/11: converged (≥ 0.9), drifted apart (≤ 0.1) or unclear."
 include_graphics(fig(r2, "fig2_convergence.png"))
 ```
 
@@ -281,13 +299,13 @@ EuroLeague is in step or one season behind (probability that it follows
 (assists) seasons earlier (@fig-timegap).
 
 ```{r fig-leadlag}
-#| fig-cap: "Shift model: posterior probability that the EuroLeague's trend equals the NBA's shifted by k seasons. Probability piling up at k = ±5 means that no lag inside the window fits well."
+#| fig-cap: "Lead–lag. For each metric, the shift model (Section 3) is fitted for lags k = −5 … 5 seasons with k marginalised out; each cell is the posterior probability P(k | data) that the EuroLeague's season means follow the NBA's smooth trend shifted by k seasons (k > 0: the EuroLeague follows). Probability piling up at k = ±5 means that no lag inside the window fits well."
 #| out-width: "85%"
 include_graphics(fig(r2, "fig3_lead_lag.png"))
 ```
 
 ```{r fig-timegap}
-#| fig-cap: "The NBA season in which the NBA first reached the EuroLeague's 2025/26 level (median and 90% interval over posterior draws), for metrics where it did."
+#| fig-cap: "Time gap. For each posterior draw of the NBA's RW2 trend (2001/02–2025/26), we find the first season in which the NBA reached the EuroLeague's 2025/26 level of the metric; dots are the median season and bars the 90% interval over draws. Only metrics where the NBA reached that level in most draws are shown."
 #| out-width: "85%"
 include_graphics(fig(r2, "fig4_time_gap.png"))
 ```
@@ -304,13 +322,13 @@ shot selection, EuroLeague teams swap rim shots for above-the-break threes in th
 percentage points), while NBA teams move a little from the rim to the short mid-range.
 
 ```{r fig-playoffs}
-#| fig-cap: "Playoff minus regular season for teams that reached the playoffs, standardised; posterior means and 95% credible intervals, 2010/11–2025/26."
+#| fig-cap: "Playoff shifts, 2010/11–2025/26. Only teams that reached the playoffs are used. For each metric a mixed model of standardised team-game values with league, league × playoff, team-season and opponent-season effects is fitted; dots are the posterior mean playoff-minus-regular-season shift in each league (in game-to-game SDs), bars 95% credible intervals."
 #| out-width: "85%"
 include_graphics(fig(r3, "fig1_playoff_shifts.png"))
 ```
 
 ```{r fig-toward}
-#| fig-cap: "Does the NBA's playoff shift point towards the EuroLeague? Metric by metric."
+#| fig-cap: "Does the NBA's playoff shift point towards the EuroLeague? For each metric and posterior draw, the NBA's playoff shift is divided by the regular-season gap (EuroLeague − NBA); a positive ratio means the playoffs move the NBA towards the EuroLeague, and 1 would close the gap. Shown are the posterior probability that the ratio is positive and its median."
 #| out-width: "85%"
 include_graphics(fig(r3, "fig2_nba_toward_euroleague.png"))
 ```
@@ -326,12 +344,12 @@ threes. Teams behind their time include the 2022/23 Chicago Bulls, whose mid-ran
 resembled an NBA team of about 2017/18, and Partizan 2022/23.
 
 ```{r fig-timemachine}
-#| fig-cap: "The time machine: the season whose league-average style each team-season is closest to. Above the diagonal = ahead of its time; labelled teams are the clearest cases (bars = 90% credible intervals)."
+#| fig-cap: "The time machine. Each team-season's 14-number style profile (shrinkage posterior, 400 draws, each feature scaled by the pooled within-season spread between teams) is compared with its league's average profile in every season (the league's path); its time position is the season it is closest to (Euclidean distance), computed draw by draw. Dots: median time position; bars: 90% interval; dot size: how much closer that season is than the team's own season. Above the diagonal = ahead of its time."
 include_graphics(fig(r4, "fig1_time_machine_teams.png"))
 ```
 
 ```{r fig-outliers}
-#| fig-cap: "Each team's distance from its league's average style per season; red = the most different team of the season."
+#| fig-cap: "Typical and different teams. For each team-season and posterior draw, the Euclidean distance between its scaled style profile and the league-season average; dots are the posterior mean distance. Red marks the team that is furthest away in most draws (the most different team of the season); lines join teams that were the most different in three or more seasons."
 include_graphics(fig(r4, "fig2_outlier_teams.png"))
 ```
 
@@ -342,26 +360,96 @@ Robin stayed a 2010s centre (@fig-lopez). EuroLeague guards such as Juan Carlos 
 Teodosić, Sergio Llull and Vassilis Spanoulis sit ahead of their time for most of their careers.
 
 ```{r fig-lopez}
-#| fig-cap: "Brook and Robin Lopez: shot charts before and after 2016/17, and their time positions among NBA centres (90% credible intervals)."
+#| fig-cap: "Brook and Robin Lopez. Left: every regular-season shot in 2015/16 and 2016/17 (red = three-point attempts). Right: each season's time position among NBA centres, computed as for teams but with the 13-number player profile compared with the average centre of every season (median and 90% interval)."
 include_graphics(fig(r4, "fig4_lopez_twins.png"))
 ```
 
 # Discussion
 
-Sixteen seasons on, the picture of @mandic2019 needs two corrections. First, convergence is real but
-partial: the leagues now shoot alike and take the same share of their shots from three, but they
-have drifted apart in tempo and in how games are refereed. The NBA plays about ten more possessions
-per 40 minutes and the EuroLeague commits about seven more fouls per 100 possessions. Second, the
-idea that the NBA "became European" is better described as two leagues responding to the same
-pressures with different constraints. The EuroLeague took a larger share of its threes earlier, but
-the NBA takes more threes per possession, because it has more possessions and fewer turnovers.
-The equal three-point share is reached from different spots on the floor, shaped by the corner
-geometry of each court.
+## The leagues are converging in skill, not in style
+
+Sixteen seasons after the period studied by @mandic2019, the two leagues shoot equally well: the
+three-point share, three-point percentage, free-throw percentage and effective field-goal percentage
+are now practically the same (Figure 1). The convergence the 2019 paper saw has continued for
+shooting; the NBA closed an 11-point gap in three-point share by about 2019/20 (Figure 7). But
+convergence in shooting has not brought convergence in style. Pace diverged: the NBA now plays about
+ten more possessions per 40 minutes, a gap that widened until about 2020/21 and has narrowed only
+slightly since. The EuroLeague still commits about seven more fouls per 100 possessions, earns fewer
+free throws per foul, turns the ball over more and rebounds more of its own misses. Even the equal
+three-point share is reached from different places: the NBA shoots from the corners, the
+EuroLeague above the break and from the short mid-range (Figures 2–3).
+
+## Why the leagues differ
+
+The remaining differences line up with the rules and with the players. Pace is measured per 40
+minutes, so the longer NBA game alone does not explain it; the NBA's defensive three-second rule and
+its slightly larger court may favour a faster, more spread-out game. The foul gap fits the different
+foul limits (six personal fouls in the NBA, five under FIBA rules), and the fact that the EuroLeague
+earns fewer free throws per foul suggests that more of its fouls are non-shooting, tactical fouls.
+The corner-three gap follows partly from court geometry: the FIBA corner three is only 11 cm shorter
+than the NBA's (6.60 m against 6.71 m), while the arc above the break is 49 cm shorter (6.75 m against
+7.24 m), so in the EuroLeague the above-the-break three is relatively easier. Because the rare
+EuroLeague corner three is worth more per attempt (1.28 points against 1.16 in the NBA), EuroLeague
+teams could probably take more of them. Players matter too: @paulauskas2018 found that European
+players in the NBA differ from EuroLeague players mainly in variables linked to body size
+(rebounds, blocks and fouls drawn), which matches the NBA's lead in blocks and defensive rebounding
+here.
+
+## Who follows whom
 
 The lead–lag results describe timing, not influence. Smooth trends over about 25 seasons can often
 be shifted a few seasons either way and still fit, so for most metrics the honest answer is that the
-data cannot tell who leads. Where they can, the EuroLeague moves with the NBA or one season behind
-on three-point shooting, and resembles the NBA of three to five seasons ago on volume measures.
+data cannot tell which league leads. Where they can, the EuroLeague moves with the NBA or one season
+behind on three-point shooting, and on volume measures (points, three-point attempts and assists per
+100 possessions) it resembles the NBA of three to five seasons ago. This refines the 2019 view that
+the NBA was becoming "more European": the EuroLeague took a larger share of its shots from three
+first, but the NBA now takes more threes per possession, because it has more possessions and fewer
+turnovers. In the playoffs the NBA does move towards the EuroLeague in tempo, fouls and free throws,
+but not in field-goal shooting, so the 2019 claim holds only in part.
+
+## How this study differs from earlier work
+
+Earlier comparisons of the two leagues have been cross-sectional or descriptive. @paulauskas2018
+compared players at one tournament (EuroBasket 2015) with discriminant analysis. @mandic2019 used
+league-season box scores from 2000/01 to 2016/17 with a linear trend per league and metric.
+Long-run NBA studies such as @zajac2023 describe four decades of shooting in a single league, and
+@erculj2015 compared shot types across levels of competition. This study differs in six ways:
+
+1. **Replication first.** Before extending the 2019 study we re-implemented its model and reproduced
+   all 68 published estimates from the authors' own data, so the update starts from a verified
+   baseline rather than from a new method with new assumptions.
+2. **Shot locations.** We add 4.1 million located attempts and compare where shots are taken and how
+   accurate they are across the court, using each league's own court geometry, instead of box-score
+   totals alone.
+3. **Team and opponent adjustment.** League differences are estimated at game level with team-season
+   and opponent-season effects, so they are not driven by a few extreme teams or schedules.
+4. **Flexible trends with uncertainty.** Second-order random walks let trends bend, and every gap,
+   convergence statement and lead–lag result comes with a posterior probability instead of a straight
+   line and a point estimate.
+5. **Explicit timing models.** The shift model and the time-gap calculation turn "who follows whom"
+   into a question the data can answer, or can openly fail to answer.
+6. **Teams and players in time.** Shrinkage style profiles place every team and rotation player on its
+   league's path, so cases such as Houston, Real Madrid or Brook Lopez come with credible intervals
+   rather than as anecdotes.
+
+All code, Stan models, tables and figures are open, and the figures are drawn with a documented R
+package [@ggbasket], so the analysis can be rerun as new seasons are played.
+
+## Practical implications
+
+For scouting and player movement, shooting skill now translates directly between the leagues, while
+pace, physical contact and the share of possessions that end in fouls do not: a player moving from the
+EuroLeague to the NBA meets a faster game with fewer fouls and more free throws per foul. For
+EuroLeague coaches, the corner three is an under-used shot. For analysts, the scorekeeping differences
+documented here (rim shots recorded about a metre from the hoop, team rebounds and turnovers credited
+differently) must be handled before the two leagues' shot or play-by-play data are compared.
+
+## Future work
+
+Three extensions follow. Play-by-play data would allow possession-level comparisons of shot-clock use,
+transition play, home advantage and line-ups. A joint model of both leagues with shared trend
+components would test convergence directly. And models that follow the same players across both
+leagues would separate the effect of the league from the effect of who plays in it.
 
 # Limitations
 

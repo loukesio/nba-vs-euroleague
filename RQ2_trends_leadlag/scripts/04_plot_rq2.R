@@ -29,7 +29,7 @@ f1 <- ggplot(curves, aes(season, colour = league, fill = league)) +
   geom_ribbon(aes(ymin = lo, ymax = hi), alpha = 0.18, colour = NA) +
   geom_line(aes(y = fit), linewidth = 0.7) +
   geom_point(aes(y = obs_mean), size = 0.8, alpha = 0.7) +
-  facet_wrap(~ label, scales = "free_y", ncol = 4) +
+  facet_wrap(~ label, scales = "free_y", ncol = 3) +
   scale_colour_manual(values = LEAGUE_COLOURS, name = NULL) +
   scale_fill_manual(values = LEAGUE_COLOURS, name = NULL) +
   season_axis +
@@ -39,25 +39,38 @@ f1 <- ggplot(curves, aes(season, colour = league, fill = league)) +
        caption = paste("Grey lines: 2014/15 14-s reset after offensive rebounds (FIBA/EuroLeague); 2018/19 same rule in the NBA;",
                        "2019/20 COVID (NBA bubble, EuroLeague cancelled after the regular season); 2022/23 NBA take-foul rule.")) +
   theme_project() +
-  theme(axis.text.x = element_text(size = 6.5))
-ggsave(fig("fig1_trends.png"), f1, width = 11, height = 8, dpi = 300)
+  theme(axis.text.x = element_text(size = 7), axis.text.y = element_text(size = 7),
+        strip.text = element_text(size = 9.5, face = "bold", hjust = 0), panel.spacing.y = unit(0.9, "lines"))
+ggsave(fig("fig1_trends.png"), f1, width = 7.5, height = 10, dpi = 300)
 
 # ---- Fig 2: convergence (gap NBA - EuroLeague over time, comparable metrics) ---------------------
 gaps <- tab("smooth_trend_gap_curves.csv") |>
   filter(metric %in% KEY) |>
   left_join(METRICS |> select(metric, label), by = "metric") |>
   mutate(label = factor(label, METRICS$label[match(KEY, METRICS$metric)]))
-f2 <- ggplot(gaps, aes(season, fit)) +
+# colour each panel by the posterior probability that the gap shrank between 2010/11 and 2025/26
+shrank <- tab("convergence_2010_2025.csv") |> select(metric, p_gap_shrank)
+gaps <- gaps |> left_join(shrank, by = "metric") |>
+  mutate(verdict = case_when(p_gap_shrank >= 0.9 ~ "Converged", p_gap_shrank <= 0.1 ~ "Drifted apart",
+                             TRUE ~ "Unclear"))
+VERDICT_COLOURS <- c(Converged = ggbasket_colours$defence, `Drifted apart` = ggbasket_colours$above, Unclear = "grey45")
+f2 <- ggplot(gaps, aes(season, fit, colour = verdict, fill = verdict)) +
   geom_hline(yintercept = 0, colour = "grey40") +
-  geom_ribbon(aes(ymin = lo, ymax = hi), fill = "grey70", alpha = 0.5) +
-  geom_line(linewidth = 0.7) +
-  facet_wrap(~ label, scales = "free_y", ncol = 4) +
+  geom_ribbon(aes(ymin = lo, ymax = hi), alpha = 0.18, colour = NA) +
+  geom_line(linewidth = 0.8) +
+  facet_wrap(~ label, scales = "free_y", ncol = 3) +
+  scale_colour_manual(values = VERDICT_COLOURS, name = NULL) +
+  scale_fill_manual(values = VERDICT_COLOURS, name = NULL) +
   season_axis +
   labs(x = NULL, y = "NBA minus EuroLeague",
        title = "Shot mix and shooting converged; pace, free throws and rebounding drifted apart",
-       subtitle = "Difference between the two smooth trends (95% CrI). A line moving towards 0 = converging.") +
-  theme_project() + theme(axis.text.x = element_text(size = 6.5))
-ggsave(fig("fig2_convergence.png"), f2, width = 11, height = 8, dpi = 300)
+       subtitle = paste("Difference between the two leagues' smooth trends (95% credible band); 0 = no difference.",
+                        "Colour = posterior probability that the gap shrank from 2010/11 to 2025/26:",
+                        "converged (\u2265 0.9), drifted apart (\u2264 0.1) or unclear.")) +
+  theme_project() +
+  theme(axis.text.x = element_text(size = 7), axis.text.y = element_text(size = 7),
+        strip.text = element_text(size = 9.5, face = "bold", hjust = 0), panel.spacing.y = unit(0.9, "lines"))
+ggsave(fig("fig2_convergence.png"), f2, width = 7.5, height = 10, dpi = 300)
 
 # ---- Fig 3: lead-lag posterior --------------------------------------------------------------------
 lags <- tab("lead_lag_posterior.csv")

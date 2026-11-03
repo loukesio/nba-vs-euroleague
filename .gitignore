@@ -23,3 +23,6 @@ manuscript/*.html
 # compiled Stan models (rebuilt from the .stan files)
 RQ2_trends_leadlag/models/*
 !RQ2_trends_leadlag/models/*.stan
+manuscript/figures/
+manuscript/*.typ
+!manuscript/manuscript.pdf
